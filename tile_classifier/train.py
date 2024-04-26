@@ -2,6 +2,8 @@ import torch
 from torchvision import datasets, models
 from torchvision.transforms import v2 as transforms_v2
 from torch.utils.data import DataLoader
+import json
+import os
 
 # Define transformations for the train and validation sets
 train_transforms = transforms_v2.Compose([
@@ -25,16 +27,23 @@ val_data = datasets.ImageFolder('data/val_grouped', transform=val_transforms)
 train_loader = DataLoader(train_data, batch_size=32, shuffle=True)
 val_loader = DataLoader(val_data, batch_size=32, shuffle=False)
 
+# Get class to index mapping
+class_to_idx = train_data.class_to_idx
+
+# Save class_to_idx mapping to a JSON file
+with open('class_to_idx.json', 'w') as json_file:
+    json.dump(class_to_idx, json_file)
+
 # ================================================
 
-model = models.mobilenet_v2(pretrained=True)  # Load pretrained MobileNetV2
+model = models.mobilenet_v2(weights="MobileNet_V2_Weights.IMAGENET1K_V1")  # Load pretrained MobileNetV2
 
 # Freeze all the layers in the base model
 for param in model.parameters():
     param.requires_grad = False
 
 # Modify the classifier to fit the number of classes
-model.classifier[1] = torch.nn.Linear(model.classifier[1].in_features, 60)  # Assume 60 classes for mahjong tiles
+model.classifier[1] = torch.nn.Linear(model.classifier[1].in_features, 42)  # Assume 42 classes for mahjong tiles
 
 # Check if GPU is available and move the model to GPU
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -47,7 +56,7 @@ import torch.optim as optim
 criterion = torch.nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.classifier.parameters(), lr=0.01)  # Optimize only the classifier
 
-def train_model(model, criterion, optimizer, train_loader, val_loader, epochs=10):
+def train_model(model, criterion, optimizer, train_loader, val_loader, epochs=20):
     for epoch in range(epochs):
         model.train()  # Set model to training mode
         running_loss = 0.0
@@ -81,5 +90,14 @@ def train_model(model, criterion, optimizer, train_loader, val_loader, epochs=10
 
 train_model(model, criterion, optimizer, train_loader, val_loader)
 
-torch.save(model.state_dict(), 'mahjong_mobilenet_v2_state_dict.pth')
-torch.save(model, 'mahjong_mobilenet_v2_full_model.pth')
+# # encode time stamp in the model name
+# import time
+# timestamp = time.strftime("%Y%m%d_%H%M")
+# model_name = f'mahjong_mobilenet_v2_{timestamp}.pth'
+
+# if the model_name below already exists, rename the existing model file to be "prev...model_name"
+
+model_name = f'mahjong_mobilenet_v2_state_dict.pth'
+if os.path.exists(model_name):
+    os.rename(model_name, f"prev_{model_name}")
+torch.save(model.state_dict(), model_name)

@@ -44,7 +44,7 @@ group("data.csv", data_dir+"/data", train_grouped_dir)
 
 ############################################
 
-val_percentage = 0.2
+val_percentage = 0.1
 
 # Set the path to the validation directory
 val_dir = os.path.join(data_dir, val_grouped_dir)
