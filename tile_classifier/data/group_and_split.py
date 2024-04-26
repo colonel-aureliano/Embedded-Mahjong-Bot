@@ -14,7 +14,7 @@ train_grouped_dir = "train_grouped"
 val_grouped_dir = "val_grouped"
 
 # Set the path to the data directory
-data_dir = "/Users/Yanny/Documents/Cornell/2023-2024/Spring 2024/ECE 5725/embedded-mahjong-bot/tile_classifier/data"
+data_dir = "/Users/Yanny/Documents/Cornell/2023-2024/Spring 2024/ECE 5725/embedded-mahjong-bot/tile_classifier/data/Apr26shot"
 
 try: 
   shutil.rmtree(train_grouped_dir)
@@ -40,7 +40,7 @@ def group(csv_file, image_dir, target_dir):
       # Copy the image file to the train directory
       shutil.copy(image_path, train_label_dir)
 
-group("data.csv", data_dir+"/data", train_grouped_dir)
+group("Apr26shot/data.csv", data_dir+"/output", train_grouped_dir)
 
 ############################################
 
@@ -53,7 +53,7 @@ val_dir = os.path.join(data_dir, val_grouped_dir)
 os.makedirs(val_dir, exist_ok=True)
 
 # Get the list of JPG files in the data directory
-files_path = os.path.join(data_dir, train_grouped_dir)  # Adjust if the folder structure is different
+files_path = os.path.join("",train_grouped_dir)  # Adjust if the folder structure is different
 
 # Get the list of folders in the files path
 folders = [folder for folder in os.listdir(files_path) if os.path.isdir(os.path.join(files_path, folder))]
@@ -67,7 +67,7 @@ for folder in folders:
   random.shuffle(jpg_files)
   # Calculate the number of files to move to the validation directory
   num_files = len(jpg_files)
-  num_val_files = int(num_files * val_percentage)
+  num_val_files = max(1,int(num_files * val_percentage))
   
   # Move the files to the validation directory
   for file in jpg_files[:num_val_files]:
