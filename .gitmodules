@@ -1,0 +1,3 @@
+[submodule "tile_classifier/yolov7"]
+	path = tile_classifier/yolov7
+	url = git@github.com:WongKinYiu/yolov7.git

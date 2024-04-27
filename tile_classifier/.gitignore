@@ -1,2 +1,4 @@
 data/*
 class_to_idx.json
+*predictions.txt
+*.pth
