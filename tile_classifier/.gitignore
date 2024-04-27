@@ -1,2 +1,2 @@
-data/train_grouped*
-data/val_grouped*
+data/*
+class_to_idx.json

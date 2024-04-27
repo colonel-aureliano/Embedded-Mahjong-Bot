@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 import json
 import sys
 import os
+import shutil
 
 # Assuming the model architecture is already defined
 model = models.mobilenet_v2(weights="MobileNet_V2_Weights.DEFAULT")
@@ -72,6 +73,10 @@ if len(sys.argv) > 1:
     elif sys.argv[1] == "-folder":
         preds = do_folder_pred(sys.argv[2], model, val_transforms, "")
         # store all preds in a txt file
+        try: 
+            shutil.rmtree("predictions.txt")
+        except FileNotFoundError:
+            pass
         with open("predictions.txt", "w") as f:
             for pred in preds:
                 f.write(f"{pred[0]}: {pred[1]}\n")

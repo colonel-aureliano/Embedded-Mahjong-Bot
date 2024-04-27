@@ -13,6 +13,9 @@ import random
 train_grouped_dir = "train_grouped"
 val_grouped_dir = "val_grouped"
 
+# Set the path to the validation directory
+val_dir = val_grouped_dir
+
 # Set the path to the data directory
 data_dir = "/Users/Yanny/Documents/Cornell/2023-2024/Spring 2024/ECE 5725/embedded-mahjong-bot/tile_classifier/data/Apr26shot"
 
@@ -44,16 +47,13 @@ group("Apr26shot/data.csv", data_dir+"/output", train_grouped_dir)
 
 ############################################
 
-val_percentage = 0.1
-
-# Set the path to the validation directory
-val_dir = os.path.join(data_dir, val_grouped_dir)
+val_percentage = 0.2
 
 # Create the validation directory if it doesn't exist
 os.makedirs(val_dir, exist_ok=True)
 
 # Get the list of JPG files in the data directory
-files_path = os.path.join("",train_grouped_dir)  # Adjust if the folder structure is different
+files_path = train_grouped_dir  # Adjust if the folder structure is different
 
 # Get the list of folders in the files path
 folders = [folder for folder in os.listdir(files_path) if os.path.isdir(os.path.join(files_path, folder))]

@@ -56,7 +56,7 @@ import torch.optim as optim
 criterion = torch.nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.classifier.parameters(), lr=0.01)  # Optimize only the classifier
 
-def train_model(model, criterion, optimizer, train_loader, val_loader, epochs=20):
+def train_model(model, criterion, optimizer, train_loader, val_loader, epochs=12):
     for epoch in range(epochs):
         model.train()  # Set model to training mode
         running_loss = 0.0
