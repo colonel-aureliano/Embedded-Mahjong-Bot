@@ -15,9 +15,6 @@ do_split = False
 train_grouped_dir = "train_grouped"
 val_grouped_dir = "val_grouped"
 
-# Set the path to the validation directory
-val_dir = val_grouped_dir
-
 # Set the path to the data directory
 data_dir_parent = "/Users/Yanny/Documents/Cornell/2023-2024/Spring 2024/ECE 5725/embedded-mahjong-bot/tile_classifier/data/"
 data_dir = data_dir_parent + "mahjong_dataset"
@@ -55,10 +52,10 @@ if do_split:
   val_percentage = 0.2
 
   # Create the validation directory if it doesn't exist
-  os.makedirs(val_dir, exist_ok=True)
+  os.makedirs(val_grouped_dir, exist_ok=True)
 
-  # Get the list of JPG files in the data directory
-  files_path = train_grouped_dir  # Adjust if the folder structure is different
+  # Get the list of JPG files in the grouped data directory
+  files_path = train_grouped_dir
 
   # Get the list of folders in the files path
   folders = [folder for folder in os.listdir(files_path) if os.path.isdir(os.path.join(files_path, folder))]
@@ -77,8 +74,8 @@ if do_split:
     # Move the files to the validation directory
     for file in jpg_files[:num_val_files]:
       src = os.path.join(folder_path, file)
-      os.makedirs(os.path.join(val_dir, folder), exist_ok=True)
-      dst = os.path.join(val_dir, folder, file)
+      os.makedirs(os.path.join(val_grouped_dir, folder), exist_ok=True)
+      dst = os.path.join(val_grouped_dir, folder, file)
       shutil.move(src, dst)
     
     print(f"{num_val_files} files moved to the validation directory for folder {folder}.")
