@@ -34,8 +34,6 @@ class_to_idx = train_data.class_to_idx
 with open('class_to_idx.json', 'w') as json_file:
     json.dump(class_to_idx, json_file)
 
-exit(0)
-
 # ================================================
 
 model = models.mobilenet_v2(weights="MobileNet_V2_Weights.IMAGENET1K_V1")  # Load pretrained MobileNetV2
