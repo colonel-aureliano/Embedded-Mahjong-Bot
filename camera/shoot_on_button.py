@@ -15,19 +15,25 @@ camera.start()
 def see_preview():
   # camera.start_preview(Preview.QTGL)
   sleep(5)
-  camera.capture_file('/home/pi/Desktop/Embedded-Mahjong-Bot/camera/image.jpg')
+  camera.capture_file('image.jpg')
+
+filename = "test"
 
 def just_shoot(name):
-  camera.capture_file(f'/home/pi/Desktop/Embedded-Mahjong-Bot/camera/{name}.jpg')
+  camera.capture_file(f'{name}.jpg')
 
 def GPIO23_callback(channel): 
-  just_shoot("test")
+  global filename
+  just_shoot(filename)
   print('Button 23 pressed.')
 
 GPIO.add_event_detect(23, GPIO.FALLING, callback=GPIO23_callback, bouncetime=300) 
 
-try:
-	print ("Press Button 27 to quit. Press Button 23 to take a photo." )
-	GPIO.wait_for_edge(27, GPIO.FALLING) 
-except KeyboardInterrupt:
-	GPIO.cleanup()
+def shoot_and_return(name):
+  try:
+    global filename
+    filename = name
+    print ("Press Button 27 to quit. Press Button 23 to take a photo." )
+    GPIO.wait_for_edge(27, GPIO.FALLING) 
+  except KeyboardInterrupt:
+    GPIO.cleanup()
