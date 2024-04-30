@@ -11,13 +11,13 @@ import random
 # - val_percentage: The percentage of images to move to the validation directory.
 
 do_group = True
-do_split = False
+do_split = True
 train_grouped_dir = "train_grouped"
 val_grouped_dir = "val_grouped"
 
 # Set the path to the data directory
 data_dir_parent = "/Users/Yanny/Documents/Cornell/2023-2024/Spring 2024/ECE 5725/embedded-mahjong-bot/tile_classifier/data/"
-data_dir = data_dir_parent + "mahjong_dataset"
+data_dir = data_dir_parent + "Apr26shot"
 
 if do_group:
   try: 
@@ -44,7 +44,7 @@ if do_group:
         # Copy the image file to the train directory
         shutil.copy(image_path, train_label_dir)
 
-  group(data_dir+"/train/_annotations.csv", data_dir+"/train", train_grouped_dir)
+  group(data_dir+"/data.csv", data_dir+"/output", train_grouped_dir)
 
 ############################################
 

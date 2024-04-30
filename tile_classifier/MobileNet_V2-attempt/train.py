@@ -20,8 +20,8 @@ val_transforms = transforms_v2.Compose([
 ])
 
 # Load the datasets
-train_data = datasets.ImageFolder('data/train_grouped', transform=train_transforms)
-val_data = datasets.ImageFolder('data/val_grouped', transform=val_transforms)
+train_data = datasets.ImageFolder('../data/train_grouped', transform=train_transforms)
+val_data = datasets.ImageFolder('../data/val_grouped', transform=val_transforms)
 
 # Define the DataLoaders
 train_loader = DataLoader(train_data, batch_size=32, shuffle=True)
@@ -33,6 +33,8 @@ class_to_idx = train_data.class_to_idx
 # Save class_to_idx mapping to a JSON file
 with open('class_to_idx.json', 'w') as json_file:
     json.dump(class_to_idx, json_file)
+
+exit(0)
 
 # ================================================
 

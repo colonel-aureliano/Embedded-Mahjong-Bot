@@ -1,7 +1,6 @@
 import torch
-from torchvision import datasets, models
+from torchvision import models
 from torchvision.transforms import v2 as transforms_v2
-from torch.utils.data import DataLoader
 import json
 import sys
 import os
@@ -11,7 +10,9 @@ import shutil
 model = models.mobilenet_v2(weights="MobileNet_V2_Weights.DEFAULT")
 model.classifier[1] = torch.nn.Linear(model.classifier[1].in_features, 42)  # Adjust for your number of classes
 
-model.load_state_dict(torch.load('mahjong_mobilenet_v2_state_dict.pth'))
+model_at = "MobileNet_V2-attempt/"
+
+model.load_state_dict(torch.load(model_at+'mahjong_mobilenet_v2_state_dict.pth'))
 model.eval()  # Set the model to evaluation mode
 
 ############################################
@@ -25,7 +26,6 @@ val_transforms = transforms_v2.Compose([
 from torchvision.io import read_image
 
 def predict_image(image_path, model, transform, device):
-    model.eval()
     image = read_image(image_path)
     image = transform(image)  # Apply the same transforms as for training/validation
     image = image.unsqueeze(0)
@@ -45,7 +45,7 @@ def do_single_image_pred(image_path, model, transform, device):
     # print(f'Predicted class index: {predicted_idx}')
 
     # Load class_to_idx mapping from a JSON file
-    with open('class_to_idx.json', 'r') as json_file:
+    with open(model_at+'class_to_idx.json', 'r') as json_file:
         class_to_idx = json.load(json_file)
 
     # Invert the dictionary to create an index to class mapping

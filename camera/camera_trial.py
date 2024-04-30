@@ -1,20 +1,21 @@
-from picamera import PiCamera
+from picamera2 import Picamera2, Preview
 from time import sleep
 
-camera = PiCamera()
+camera = Picamera2()
 camera.resolution = (3264, 2448)
 # camera.rotation = 180
 
 # camera.start_preview(alpha=200)
+camera_config=camera.create_preview_configuration()
+camera.configure(camera_config)
 
 def see_preview():
-  camera.start_preview()
   sleep(5)
-  camera.capture('/home/pi/Desktop/Embedded-Mahjong-Bot/camera/image.jpg')
-  camera.stop_preview()
+  # camera.start_preview(Preview.QTGL)
+  camera.capture_file('image.jpg')
 
-def just_save_image(n):
-  for i in range(n):
-    camera.capture(f'/home/pi/Desktop/Embedded-Mahjong-Bot/camera/image{i}.jpg')
+def just_save_image(name):
+  camera.capture_file(f'{name}.jpg')
 
-just_save_image(1)
+camera.start()
+just_save_image("test2")
