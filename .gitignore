@@ -1,4 +1,4 @@
 .DS_Store
 *.jpg
 *.jpeg
-/temp/*
+*temp*
