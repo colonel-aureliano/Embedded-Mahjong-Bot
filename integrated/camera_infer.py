@@ -2,10 +2,10 @@ import json
 import sys
 from PIL import Image
 
-sys.path.append('../')
+# call from parent directory
+sys.path.append('')
 
 def retreive_robo(model_at):
-    sys.path.append(model_at)
     from tile_classifier.robo import robo # type: ignore
     return robo.model()
 
@@ -29,10 +29,13 @@ def do_single_image_pred(image_path, model):
     predicted_dict = predict_image(image_path, model)
     predicted_list = predicted_dict['predictions']
 
+    model_at = "tile_classifier/robo/"
+
     # Load class_to_idx mapping from a JSON file
     with open(model_at+'idx_to_class.json', 'r') as json_file:
         class_mapping = json.load(json_file)
     
+    # print(predicted_list)
     # print(predicted_list)
 
     predicted_list.sort(key=lambda x: x.get("x"))
@@ -52,6 +55,8 @@ def do_single_image_pred(image_path, model):
 
         return_list.append(data)
     
+    return return_list
+    
 if __name__ == "__main__":
 # read command line arguments, if "-single" is present, parse second argument as image path and call do_single_image_pred
 # else, if "-shoot" is present, call ../camera/shoot_on_button.py to generate image and call do_single_image_pred
@@ -65,7 +70,7 @@ if __name__ == "__main__":
                 json.dump(pred, json_file, indent=4) 
         elif sys.argv[1] == "-shoot":
             from camera import shoot_on_button
-            shoot_on_button.shoot_and_return("shot_image")
+            shoot_on_button.no_button_shoot("shot_image")
             pred = do_single_image_pred("shot_image.jpg", model)
             # print(pred)
             with open("predictions.txt", "w") as json_file:

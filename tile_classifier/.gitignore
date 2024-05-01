@@ -1,4 +1,3 @@
 data/*
 MobileNet_V2-attempt/class_to_idx.json
-*predictions.txt
 *.pth

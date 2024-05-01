@@ -37,3 +37,13 @@ def shoot_and_return(name):
     GPIO.wait_for_edge(27, GPIO.FALLING) 
   except KeyboardInterrupt:
     GPIO.cleanup()
+
+def no_button_shoot(name):
+  try:
+    global filename
+    filename = name
+    input("Press return to take photo.")
+    just_shoot(filename)
+    print('Shot.')
+  except KeyboardInterrupt:
+    GPIO.cleanup()
