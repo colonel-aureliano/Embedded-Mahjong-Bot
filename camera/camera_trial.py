@@ -16,4 +16,4 @@ def just_save_image(name):
   camera.capture_file(f'{name}.jpg')
 
 camera.start()
-just_save_image("test2")
+just_save_image("camera_trial")
