@@ -16,7 +16,7 @@ def inferred_detections(detector, image_path):
     detections = detector.detect(image)
     end = time.time()
     elapsed = end - begin
-    print(f"Time elapsed: {elapsed} seconds")
+    print(f"Prediction time: {elapsed} seconds")
 
     return detections
 
@@ -37,20 +37,27 @@ def retreive_onnx():
                       iou_threshold=iou_threshold,
                       device=device)
 
-if __name__ == "__main__":
+
+def shoot_and_detect():
     if len(sys.argv) <= 1 or sys.argv[1] not in ["-single", "-shoot-wait", '-shoot']:
         print("Please provide a valid option: -single for single image prediction, -shoot for taking a photo with Pi Camera then do prediction, -shoot-wait for taking a photo with Pi Camera upon input then do prediction.")
         print("Add -json to store output.")
         sys.exit(1)
 
     detector = retreive_onnx()
+    photo_path = "integrated/shot_image.jpg"
+    predictions_path = "integrated/predictions.json"
+
     if sys.argv[1] == "-single":
         pass
     elif sys.argv[1] == "-shoot-wait":
-        shoot_on_button.no_button_shoot("shot_image")
+        shoot_on_button.no_button_shoot(photo_path, True)
+        print('Shot and saved at '+photo_path)
     elif sys.argv[1] == "-shoot":
-        shoot_on_button.no_button_shoot("shot_image", False)
-    pred = inferred_detections(detector,"shot_image.jpg")
+        shoot_on_button.no_button_shoot(photo_path, False)
+        print('Shot and saved at '+photo_path)
+
+    pred = inferred_detections(detector,photo_path)
     if len(sys.argv) > 2 and sys.argv[2] == '-json':
         for d in pred:
             for key, value in d.items():
@@ -60,7 +67,11 @@ if __name__ == "__main__":
                     d[key] = int(value)
                 elif isinstance(value, np.float32):
                     d[key] = float(value)
-        with open("predictions.json", "w") as json_file:
+        with open(predictions_path, "w") as json_file:
             json.dump(pred, json_file, indent=4)
+            print(f"Predictions stored at {predictions_path}")
     else:
         print(pred)
+
+if __name__ == "__main__":
+    shoot_and_detect()

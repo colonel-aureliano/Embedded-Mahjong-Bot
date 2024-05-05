@@ -20,7 +20,7 @@ def see_preview():
 filename = "test"
 
 def just_shoot(name):
-  camera.capture_file(f'{name}.jpg')
+  camera.capture_file(f'{name}')
 
 def GPIO23_callback(channel): 
   global filename
@@ -44,6 +44,5 @@ def no_button_shoot(name, wait):
     filename = name
     if (wait): input("Press return to take photo.")
     just_shoot(filename)
-    print('Shot and saved at '+filename+".jpg")
   except KeyboardInterrupt:
     GPIO.cleanup()
