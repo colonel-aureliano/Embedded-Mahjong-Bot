@@ -1,0 +1,13 @@
+train: data/v3/train/images
+val: data/v3/valid/images
+test: data/v3/test/images
+
+nc: 42
+names: ['b', 'b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8', 'b9', 'e', 'f1', 'f2', 'f3', 'f4', 'g', 'n', 'r', 's', 's1', 's2', 's3', 's4', 't1', 't2', 't3', 't4', 't5', 't6', 't7', 't8', 't9', 'w', 'w1', 'w2', 'w3', 'w4', 'w5', 'w6', 'w7', 'w8', 'w9']
+
+roboflow:
+  workspace: test01-8ymsa
+  project: 4a41f234e48d49b5b335f25643ca0293
+  version: 3
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/test01-8ymsa/4a41f234e48d49b5b335f25643ca0293/dataset/3

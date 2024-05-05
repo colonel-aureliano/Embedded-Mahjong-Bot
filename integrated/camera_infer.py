@@ -9,15 +9,6 @@ def retreive_robo(model_at):
     from tile_classifier.robo import robo # type: ignore
     return robo.model()
 
-def retrieve_mobilenet(model_at):
-    import torch
-    from torchvision import models
-    model = models.mobilenet_v2(weights="MobileNet_V2_Weights.DEFAULT")
-    model.classifier[1] = torch.nn.Linear(model.classifier[1].in_features, 42)  # Adjust for your number of classes
-    model.load_state_dict(torch.load(model_at+'mahjong_mobilenet_v2_state_dict.pth'))
-    model.eval()  # Set the model to evaluation mode
-    return model
-
 ############################################
 
 def predict_image(image_path, model):
