@@ -3,6 +3,7 @@ import cv2
 import json
 import numpy as np
 
+sys.path.append('')
 from tile_classifier.onnx.yolov9 import YOLOv9
 import time
 
@@ -21,6 +22,7 @@ def retreive_onnx():
     weights_path = "tile_classifier/onnx/weights/best_striped_V3_800_gelan-c.onnx"
     classes_path = "tile_classifier/onnx/weights/class_labels.yaml"
     h,w = 2464,3280
+    # h,w = 80, 800
     score_threshold = 0.1
     conf_threshold = 0.4
     iou_threshold = 0.4
