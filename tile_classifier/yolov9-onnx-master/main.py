@@ -3,7 +3,18 @@ import cv2
 from pathlib import Path
 
 from yolov9 import YOLOv9
+import time
 
+def inferred_detections(detector, image_path):
+    image = cv2.imread(image_path)
+
+    # begin = time.time()
+    detections = detector.detect(image)
+    # end = time.time()
+    # elapsed = end - begin
+    # print(f"Time elapsed: {elapsed} seconds")
+
+    return detections
 
 def get_detector(args):
     weights_path = args.weights
@@ -34,8 +45,12 @@ def inference_on_image(args):
     detector = get_detector(args)
     image = cv2.imread(args.source)
 
+    begin = time.time()
     print("[INFO] Inference Image")
     detections = detector.detect(image)
+    end = time.time()
+    elapsed = end - begin
+    print(f"Time elapsed: {elapsed} seconds")
     detector.draw_detections(image, detections=detections)
 
     output_path = f"output/{Path(args.source).name}"
