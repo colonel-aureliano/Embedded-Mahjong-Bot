@@ -36,7 +36,12 @@ class Player:
     if (len(self.current_hand) >= 14):
       raise Exception("Hand is already full")
     self.current_hand.append(tile)
+  
+  def reset_hand(self):
+    self.current_hand = []
 
+  # Decides on a tile to play
+  # Remove the tile from its own hand and return it
   def play_tile(self) -> int:
     if (len(self.current_hand) < 14):
       raise Exception("Hand is not full")
@@ -166,7 +171,7 @@ class Player:
       if (tile in self.flower_indices or tile in self.season_indices):
         return tile
       
-    tiles_out_there = [4] * 34
+    tiles_out_there = [4] * 42
     for tile in self.current_hand:
       tiles_out_there[tile] -= 1
     

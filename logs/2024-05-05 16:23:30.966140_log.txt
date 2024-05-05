@@ -1,0 +1,19 @@
+Mahjong Bot Run Log; ran at 2024-05-05 16:23:30.966140
+################### Round 1 ###################
+Player ready?
+Playing in process.
+Shot and saved at integrated/shot_image.jpg
+Prediction time: 6.25909686088562 seconds
+Predictions stored at integrated/predictions.json
+Detected: ['w7', 'w6', 'w8', 't1', 't2', 't3', 'b5', 'b6', 'b7', 'b8', 'b9', 'g', 'e', 'e']
+Bot plays t1
+################### Round 2 ###################
+Player ready?
+Playing in process.
+Shot and saved at integrated/shot_image.jpg
+Prediction time: 5.520100355148315 seconds
+Predictions stored at integrated/predictions.json
+Detected: ['w7', 'w6', 'w8', 'w9', 't2', 't3', 'b5', 'b6', 'b7', 'b8', 'b9', 'g', 'e', 'e']
+Bot plays t2
+################### Round 3 ###################
+Player ready?

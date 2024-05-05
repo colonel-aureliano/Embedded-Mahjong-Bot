@@ -1,0 +1,9 @@
+Mahjong Bot Run Log; ran at 2024-05-05 16:18:13.541975
+Player ready?
+Playing in process.
+Shot and saved at integrated/shot_image.jpg
+Prediction time: 5.861417293548584 seconds
+Predictions stored at integrated/predictions.json
+Detected: ['w1', 'w6', 'w8', 'w9', 't3', 't1', 't2', 't3', 'b7', 'b8', 'b9', 'g', 'e', 'e']
+Bot plays t3
+Player ready?
