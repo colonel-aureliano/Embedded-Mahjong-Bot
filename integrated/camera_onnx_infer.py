@@ -9,69 +9,78 @@ import time
 
 from camera import shoot_on_button
 
-def inferred_detections(detector, image_path):
-    image = cv2.imread(image_path)
+class Infer:
 
-    begin = time.time()
-    detections = detector.detect(image)
-    end = time.time()
-    elapsed = end - begin
-    print(f"Prediction time: {elapsed} seconds")
-
-    return detections
-
-def retreive_onnx():
-    weights_path = "tile_classifier/onnx/weights/best_striped_V3_800_gelan-c.onnx"
-    classes_path = "tile_classifier/onnx/weights/class_labels.yaml"
-    h,w = 2464,3280
-    # h,w = 80, 800
-    score_threshold = 0.1
-    conf_threshold = 0.4
-    iou_threshold = 0.4
-    device = "cpu"
-    return YOLOv9(model_path=weights_path,
-                      class_mapping_path=classes_path,
-                      original_size=(w, h),
-                      score_threshold=score_threshold,
-                      conf_thresold=conf_threshold,
-                      iou_threshold=iou_threshold,
-                      device=device)
-
-
-def shoot_and_detect():
-    if len(sys.argv) <= 1 or sys.argv[1] not in ["-single", "-shoot-wait", '-shoot']:
-        print("Please provide a valid option: -single for single image prediction, -shoot for taking a photo with Pi Camera then do prediction, -shoot-wait for taking a photo with Pi Camera upon input then do prediction.")
-        print("Add -json to store output.")
-        sys.exit(1)
-
-    detector = retreive_onnx()
     photo_path = "integrated/shot_image.jpg"
     predictions_path = "integrated/predictions.json"
 
-    if sys.argv[1] == "-single":
+    def __init__(self):
         pass
-    elif sys.argv[1] == "-shoot-wait":
-        shoot_on_button.no_button_shoot(photo_path, True)
-        print('Shot and saved at '+photo_path)
-    elif sys.argv[1] == "-shoot":
-        shoot_on_button.no_button_shoot(photo_path, False)
-        print('Shot and saved at '+photo_path)
 
-    pred = inferred_detections(detector,photo_path)
-    if len(sys.argv) > 2 and sys.argv[2] == '-json':
-        for d in pred:
-            for key, value in d.items():
-                if isinstance(value, np.ndarray):
-                    d[key] = value.tolist()
-                elif isinstance(value, np.int64):
-                    d[key] = int(value)
-                elif isinstance(value, np.float32):
-                    d[key] = float(value)
-        with open(predictions_path, "w") as json_file:
-            json.dump(pred, json_file, indent=4)
-            print(f"Predictions stored at {predictions_path}")
-    else:
-        print(pred)
+    def inferred_detections(self,detector, image_path):
+        image = cv2.imread(image_path)
+
+        begin = time.time()
+        detections = detector.detect(image)
+        end = time.time()
+        elapsed = end - begin
+        print(f"Prediction time: {elapsed} seconds")
+
+        return detections
+
+    def retreive_onnx(self):
+        weights_path = "tile_classifier/onnx/weights/best_striped_V3_800_gelan-c.onnx"
+        classes_path = "tile_classifier/onnx/weights/class_labels.yaml"
+        # h,w = 2464,3280
+        h,w = 80, 800
+        score_threshold = 0.1
+        conf_threshold = 0.4
+        iou_threshold = 0.4
+        device = "cpu"
+        return YOLOv9(model_path=weights_path,
+                        class_mapping_path=classes_path,
+                        original_size=(w, h),
+                        score_threshold=score_threshold,
+                        conf_thresold=conf_threshold,
+                        iou_threshold=iou_threshold,
+                        device=device)
+
+    def shoot_detect_to_json(self,predictions_path):
+        self.prediction_path = predictions_path
+        self.run(["", "-shoot", "-json"])
+
+    def run(self,args):
+        if len(args) <= 1 or args[1] not in ["-single", "-shoot-wait", '-shoot']:
+            print("Please provide a valid option: -single for single image prediction, -shoot for taking a photo with Pi Camera then do prediction, -shoot-wait for taking a photo with Pi Camera upon input then do prediction.")
+            print("Add -json to store output.")
+            sys.exit(1)
+
+        detector = self.retreive_onnx()
+
+        if args[1] == "-single":
+            pass
+        elif args[1] == "-shoot-wait":
+            shoot_on_button.no_button_shoot(self.photo_path, True)
+            print('Shot and saved at '+self.photo_path)
+        elif args[1] == "-shoot":
+            shoot_on_button.no_button_shoot(self.photo_path, False)
+            print('Shot and saved at '+self.photo_path)
+
+        pred = self.inferred_detections(detector,self.photo_path)
+        if len(args) > 2 and args[2] == '-json':
+            for d in pred:
+                for key, value in d.items():
+                    if isinstance(value, np.ndarray):
+                        d[key] = value.tolist()
+                    elif isinstance(value, np.int64):
+                        d[key] = int(value)
+                    elif isinstance(value, np.float32):
+                        d[key] = float(value)
+            with open(self.predictions_path, "w") as json_file:
+                json.dump(pred, json_file, indent=4)
+                print(f"Predictions stored at {self.predictions_path}")
+        else:
+            print(pred)
 
 if __name__ == "__main__":
-    shoot_and_detect()
+    Infer.run(sys.argv)

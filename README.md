@@ -22,3 +22,4 @@ This command uses an `onnx` model exported from an instance of `Yolo-v9` model. 
 ### Acknowledgements:
 * https://github.com/WongKinYiu/yolov9
 * https://github.com/danielsyahputra/yolov9-onnx
+* https://github.com/JohnnyLiang1018/MahjongAI/tree/master/offline_mahjong

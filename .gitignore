@@ -5,3 +5,4 @@
 __pycache__*
 *predictions.txt
 *predictions.json
+tile_classifier/data/*
