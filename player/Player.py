@@ -5,7 +5,7 @@
 # honors east - white is 31 - 37
 # seasons is 38 - 41
 
-from HandPartitioner import HandPartitioner
+from .HandPartitioner import HandPartitioner
 
 class Player:
   partitioner : HandPartitioner = None

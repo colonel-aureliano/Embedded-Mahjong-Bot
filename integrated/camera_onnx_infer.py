@@ -11,11 +11,11 @@ from camera import shoot_on_button
 
 class Infer:
 
-    photo_path = "integrated/shot_image.jpg"
-    predictions_path = "integrated/predictions.json"
 
     def __init__(self):
-        pass
+        self.photo_path = "integrated/shot_image.jpg"
+        self.predictions_path = "integrated/predictions.json"
+        self.generate_image = False
 
     def inferred_detections(self,detector, image_path):
         image = cv2.imread(image_path)
@@ -25,14 +25,23 @@ class Infer:
         end = time.time()
         elapsed = end - begin
         print(f"Prediction time: {elapsed} seconds")
+        
+        if (self.generate_image):
+            detector.draw_detections(image, detections=detections)
+            # output_path = f"predicted_{image_path}"
+            output_path = "predicted.jpg"
+            if (cv2.imwrite(output_path, image)):
+                print(f"Prediction image saved in predicted.jpg")
+            else:
+                print("Prediction image save unsuccessful")
 
         return detections
 
     def retreive_onnx(self):
         weights_path = "tile_classifier/onnx/weights/best_striped_V3_800_gelan-c.onnx"
         classes_path = "tile_classifier/onnx/weights/class_labels.yaml"
-        # h,w = 2464,3280
-        h,w = 80, 800
+        h,w = 2464,3280
+        # h,w = 80, 800
         score_threshold = 0.1
         conf_threshold = 0.4
         iou_threshold = 0.4
@@ -45,7 +54,8 @@ class Infer:
                         iou_threshold=iou_threshold,
                         device=device)
 
-    def shoot_detect_to_json(self,predictions_path):
+    def shoot_detect_to_json(self,predictions_path,generate_image):
+        self.generate_image = generate_image
         self.prediction_path = predictions_path
         self.run(["", "-shoot", "-json"])
 
@@ -83,4 +93,5 @@ class Infer:
             print(pred)
 
 if __name__ == "__main__":
-    Infer.run(sys.argv)
+    infer = Infer()
+    infer.run(sys.argv)

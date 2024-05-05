@@ -3,16 +3,26 @@ import json
 from player.Player import Player
 
 def play_round(infer : Infer, player : Player, mapping : dict[str, int]):
-  infer.shoot_detect_to_json("integrated/predictions.json")
+  prediction_path = "integrated/predictions.json"
+  infer.shoot_detect_to_json(prediction_path, True)
 
   # read predictions.json
-  with open("integrated/predictions.json") as f:
+  with open(prediction_path) as f:
     predictions = json.load(f)
 
+  names = []
   tiles = []
   for prediction in predictions:
     name = prediction['class_name']
+    names.append(name)
     tiles.append(mapping[name])
+
+  if(len(tiles) != 14):
+    print(names)
+    for i in range(14-len(tiles)):
+      name = input("Add missing tile: ")
+      names.append(name)
+      tiles.append(mapping[name])
 
   for tile in tiles:
     player.add_tile(tile)
@@ -29,3 +39,5 @@ def main():
     mapping = json.load(f)
 
   play_round(infer, player, mapping)
+
+main()
