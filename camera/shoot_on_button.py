@@ -38,12 +38,12 @@ def shoot_and_return(name):
   except KeyboardInterrupt:
     GPIO.cleanup()
 
-def no_button_shoot(name):
+def no_button_shoot(name, wait):
   try:
     global filename
     filename = name
-    input("Press return to take photo.")
+    if (wait): input("Press return to take photo.")
     just_shoot(filename)
-    print('Shot.')
+    print('Shot and saved at '+filename+".jpg")
   except KeyboardInterrupt:
     GPIO.cleanup()
