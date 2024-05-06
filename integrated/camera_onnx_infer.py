@@ -13,8 +13,9 @@ class Infer:
     def __init__(self):
         self.photo_path = "integrated/shot_image.jpg"
         self.predictions_path = "integrated/predictions.json"
+        self.detector = self.retreive_onnx()
 
-    def inferred_detections(self,detector, image_path, generate_image=False):
+    def inferred_detections(self, detector, image_path, generate_image=False):
         image = cv2.imread(image_path)
 
         begin = time.time()
@@ -35,7 +36,7 @@ class Infer:
         return detections
 
     def retreive_onnx(self):
-        weights_path = "tile_classifier/onnx/weights/best_striped_V3_800_gelan-c.onnx"
+        weights_path = "tile_classifier/onnx/weights/best-v4-800-half-fp32.onnx"
         classes_path = "tile_classifier/onnx/weights/class_labels.yaml"
         h,w = 2464,3280
         # h,w = 80, 800
@@ -61,8 +62,6 @@ class Infer:
             print("Add -json to store output.")
             sys.exit(1)
 
-        detector = self.retreive_onnx()
-
         if args[1] == "-single":
             pass
         elif args[1] == "-shoot-wait":
@@ -74,7 +73,7 @@ class Infer:
             shoot_on_button.no_button_shoot(self.photo_path, False)
             print('Shot and saved at '+self.photo_path)
 
-        pred : list[dict] = self.inferred_detections(detector, self.photo_path, generate_image or len(args) > 2 and args[2] == '-generate-image')
+        pred : list[dict] = self.inferred_detections(self.detector, self.photo_path, generate_image or len(args) > 2 and args[2] == '-generate-image')
         pred.sort(key=lambda d: d['box'][0])
 
         if len(args) > 2 and args[2] == '-json':

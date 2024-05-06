@@ -37,8 +37,8 @@ if __name__ == "__main__":
     camera.start()
 
     while True:
-        if (len(sys.argv) > 1 and sys.argv[1] != 'single'): total = cvt_int(input())
-        else: total = 1
+        total = cvt_int(input())
+        if (len(sys.argv) > 1 and sys.argv[1] == 'single'): total = 1 
         if (total == 0):
             print('photo taking ends')
             break
