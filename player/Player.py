@@ -5,7 +5,7 @@
 # honors east - white is 31 - 37
 # seasons is 38 - 41
 
-from .HandPartitioner import HandPartitioner
+from HandPartitioner import HandPartitioner
 
 class Player:
   partitioner : HandPartitioner = None
@@ -72,8 +72,8 @@ class Player:
       jinzhang_count += tiles_out_there[tile]   # the tile itself can form a couplet/triplet/quadruplet with itself
       __jinzhang_for_suit(suit, jinzhang_count)
     
-    seq_primary : dict = self.partitioner.partition_dict(self.current_hand, 'seq')
-    for key, tile_list in seq_primary.items():
+    patterns : dict = self.partitioner.find_patterns(self.current_hand)
+    for key, tile_list in patterns.items():
       if (key == 'seq-complete'):
         for tile in tile_list:
           suit : int = tile // 9
@@ -160,9 +160,9 @@ class Player:
   def __decision(self) -> int:
     # decide on which tile to play from a hand of 14 tiles
     # E.g. Hand [10, 10, 10, 11, 11, 11, 12, 12, 12, 13, 13, 13, 31, 33]
-    # seq_primary : dict = self.partitioner.partition_dict(self.current_hand, 'seq')
+    # patterns : dict = self.partitioner.find_patterns(self.current_hand)
     # {'seq-complete': [10, 10, 10], 'seq-two-way': [], 'seq-one-way': [], 'seq-middle': [], 'triplet': [13], 'pair': [], 'single': [31, 33]}
-    # tri_primary : dict = self.partitioner.partition_dict(self.current_hand, 'tri')
+    # tri_primary : dict = self.partitioner.find_patterns(self.current_hand, 'tri')
     # {'triplet': [10, 11, 12, 13], 'seq-complete': [], 'seq-two-way': [], 'seq-one-way': [], 'seq-middle': [], 'pair': [], 'single': [31, 33]}
 
     # Principle: 
@@ -178,18 +178,24 @@ class Player:
     simulated_hand = self.current_hand.copy()
       
     # 1. Remove tiles that are part of a complete sequence or triplet
-    seq_primary : dict = self.partitioner.partition_dict(simulated_hand, 'seq')
-    # print(seq_primary)
+    patterns : dict = self.partitioner.find_patterns(simulated_hand)
+    # print(patterns)
     # print(tiles_out_there)
 
-    for key, tile_list in seq_primary.items():
-      if (key == 'seq-complete'):
+    for key, tile_list in patterns.items():
+      if key == 'seq-complete':
         for tile in tile_list:
           simulated_hand.remove(tile)
           simulated_hand.remove(tile+1)
           simulated_hand.remove(tile+2)
-      elif (key == 'triplet'):
+      elif key == 'triplet':
         for tile in tile_list:
+          simulated_hand.remove(tile)
+          simulated_hand.remove(tile)
+          simulated_hand.remove(tile)
+      elif key == 'quadruplet':
+        for tile in tile_list:
+          simulated_hand.remove(tile)
           simulated_hand.remove(tile)
           simulated_hand.remove(tile)
           simulated_hand.remove(tile)
@@ -198,9 +204,22 @@ class Player:
 
     # 2. Calculate for each of the rest of the tiles, the number of "JinZhang"    
     jinzhang_dict = self.__jinzhang(simulated_hand, tiles_out_there)
-    # print(jinzhang_dict)
+    print(jinzhang_dict)
 
-    # 3. Play the tile with the most number of "JinZhang"
-    tile = max(jinzhang_dict, key=jinzhang_dict.get)
+    # 3. Play the tile with highest score
+    # In case of tie, play the one that is not part of a couplet in patterns
+    max_tiles = []
+    max_score = 0
+    for tile, score in jinzhang_dict.items():
+      if score > max_score:
+        max_score = score
+        max_tiles = [tile]
+      elif score == max_score:
+        max_tiles.append(tile)
+    # tile = max(jinzhang_dict, key=jinzhang_dict.get)
+    for tile in max_tiles:
+      if tile in patterns['couplet']:
+        continue
+      return tile
 
     return tile
