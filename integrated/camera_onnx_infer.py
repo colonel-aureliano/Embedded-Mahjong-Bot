@@ -41,7 +41,7 @@ class Infer:
         h,w = 2464,3280
         # h,w = 80, 800
         score_threshold = 0.05
-        conf_threshold = 0.01
+        conf_threshold = 0.2
         iou_threshold = 0.4   # intersection over union threshold
         device = "cpu"
         return YOLOv9(model_path=weights_path,
