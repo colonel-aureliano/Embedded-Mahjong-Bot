@@ -204,7 +204,7 @@ class Player:
 
     # 2. Calculate for each of the rest of the tiles, the number of "JinZhang"    
     jinzhang_dict = self.__jinzhang(simulated_hand, tiles_out_there)
-    print(jinzhang_dict)
+    # print(jinzhang_dict)
 
     # 3. Play the tile with highest score
     # In case of tie, play the one that is not part of a couplet in patterns

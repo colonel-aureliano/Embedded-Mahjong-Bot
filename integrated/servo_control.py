@@ -5,6 +5,7 @@
 import RPi.GPIO as GPIO  # Imports the standard Raspberry Pi GPIO library
 import time   # Imports sleep (aka wait or pause) into the program
 import re
+import pigpio
 
 #================================helper functions===============================
 def map_value(input_value, input_range, output_range):
@@ -55,13 +56,14 @@ def run_control(rack, played):
     # Path to the log file
     log_file_path = "logs/log2.txt"
 
+    pi_hw = pigpio.pi()
     # Set up pin 11 for PWM
-    GPIO.setup(26,GPIO.OUT)  # Sets up pin 11 to an output (instead of an input)
-    p = GPIO.PWM(26, 50)     # Sets up pin 11 as a PWM pin
-    p.start(0)               # Starts running PWM on the pin and sets it to 
+    #GPIO.setup(26,GPIO.OUT)  # Sets up pin 11 to an output (instead of an input)
+    #p = GPIO.PWM(26, 50)     # Sets up pin 11 as a PWM pin
+    #p.start(0)               # Starts running PWM on the pin and sets it to 
 
     tile_range = (0, 13)
-    pointer_range = (12, 5)
+    pointer_range = (10, 4)
 
     start_time = time.time()
 
@@ -70,9 +72,11 @@ def run_control(rack, played):
 
     #rack = []
 
+    dc2 = 12
+    end_dc = dc2 * 10000
 
     while True:
-        if time.time() - start_time > 10:
+        if time.time() - start_time > 5:
                 break
         # Move the servo back and forth
         #rack, played = get_latest_play_value(log_file_path)
@@ -81,10 +85,13 @@ def run_control(rack, played):
         #print("tile_played: "+str(tile))
         #tile = int(input("Tile value: "))
         pointer = map_value(tile, tile_range, pointer_range)
-        p.ChangeDutyCycle(pointer)     # Changes the pulse width to 3 (so moves the servo)
-        #time.sleep(3)                 # Wait 1 second
-    p.ChangeDutyCycle(3) #go back to initial position
+        in_dc = int(pointer * 10000)
+        #p.ChangeDutyCycle(pointer)     # Changes the pulse width to 3 (so moves the servo)
+        pi_hw.hardware_PWM(13, 50, in_dc)
+        time.sleep(2)                 # Wait 1 second
+    pi_hw.hardware_PWM(13, 50, end_dc)
 
         # Clean up everything
-    p.stop()                 # At the end of the program, stop the PWM
+    pi_hw.stop()
+    #p.stop()                 # At the end of the program, stop the PWM
     GPIO.cleanup()           # Resets the GPIO pins back to defaults

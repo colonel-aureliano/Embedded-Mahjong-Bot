@@ -2,7 +2,10 @@ from camera_onnx_infer import Infer
 import rounds
 from player.Player import Player
 import sys
+import os
+import traceback
 from datetime import datetime
+import gpio_interface
 
 def main():
   infer = Infer()
@@ -13,6 +16,10 @@ def main():
     print("Bye!")
   else:
     print("Game ended unexpectedly.")
+
+def clean_up():
+  gpio_interface.clean_up()
+  os._exit(0)
 
 #####################################################
 
@@ -30,11 +37,25 @@ class Logger:
     
 if __name__ == "__main__":
   current_time = datetime.now()
+  log_filename = f"logs/{current_time}_log.txt"
 
   # Redirect stdout to log file
-  sys.stdout = Logger(f"logs/{current_time}_log.txt")
+  sys.stdout = Logger(log_filename)
 
-  # Now all print statements will be redirected to log.txt
-  print(f"Mahjong Bot Run Log; ran at {current_time}")
+  try:
+    # Now all print statements will be redirected to log.txt
+    print(f"Mahjong Bot Run Log; ran at {current_time}")
+    main()
 
-  main()
+  except Exception as e:
+    print(f"An exception occurred: {e}")
+    traceback.print_exc()
+
+    # Delete the log file if an exception is thrown
+    try:
+        os.remove(log_filename)
+        print("Deleted log file due to exception.")
+    except Exception as e:
+        print(f"Failed to delete log file: {e}")
+    
+    clean_up()

@@ -9,13 +9,14 @@ GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 do_quit = False
 
+def clean_up():
+  # immediate end below
+  tft_display.clean_up()
+  GPIO.cleanup()
+
 def GPIO27_callback(channel): 
   global do_quit
   do_quit = True
-  # immediate end below
-  # tft_display.clean_up()
-  # GPIO.cleanup()
-  # os._exit(0)
 
 GPIO.add_event_detect(27, GPIO.FALLING, callback=GPIO27_callback, bouncetime=300) 
 
