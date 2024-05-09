@@ -6,9 +6,9 @@ from time import sleep
 
 WHITE = 255,255,255
 BLACK = 0, 0, 0
-CENTER = 240,180
-TOP = 240, 60
-LOWER = 240, 300
+CENTER = 160,120
+TOP = 160, 60
+LOWER = 160, 200
 os.putenv('SDL_VIDEODRIVER','fbcon') # two environment variables for piTFT display
 os.putenv('SDL_FBDEV', '/dev/fb0')
 os.putenv('SDL_MOUSEDRV','dummy') # Environment variables for touchscreen
@@ -18,8 +18,6 @@ os.putenv('DISPLAY','')
 size = width, height = 320, 240 
 
 pygame.init()
-# pitft = pigame.PiTft()
-lcd = pygame.display.set_mode((320, 240))
 
 font_big = pygame.font.Font(None, 50)
 font_small = pygame.font.Font(None, 30)
@@ -35,7 +33,6 @@ def display_smaller_top(screen, text):
   rect = text_surface.get_rect(center=TOP)
   screen.blit(text_surface, rect)
   pygame.display.flip()
-  pygame.display.update()
 
 def display_big_center(screen, text):
   screen.fill(BLACK)
@@ -43,15 +40,13 @@ def display_big_center(screen, text):
   rect = text_surface.get_rect(center=CENTER)
   screen.blit(text_surface, rect)
   pygame.display.flip()
-  pygame.display.update()
 
 def display_smaller_lower(screen, text):
   screen.fill(BLACK)
-  text_surface = font_big.render(text, True, WHITE)
+  text_surface = font_small.render(text, True, WHITE)
   rect = text_surface.get_rect(center=LOWER)
   screen.blit(text_surface, rect)
   pygame.display.flip()
-  pygame.display.update()
 
 #####################################################
 
@@ -64,8 +59,8 @@ def trial(screen):
   text_surface = font_big.render('Hello World!', True, WHITE)
   rect = text_surface.get_rect(center=CENTER)
   screen.blit(text_surface, rect)
-  # pygame.display.flip()
-  pygame.display.update()
+  pygame.display.flip()
+  sleep(10)
 
 def main():
   # pygame.mouse.set_visible(False)

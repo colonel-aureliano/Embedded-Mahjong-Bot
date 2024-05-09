@@ -19,10 +19,9 @@ def gpio():
   p.stop()                 # At the end of the program, stop the PWM
   GPIO.cleanup()           # Resets the GPIO pins back to defaults
 
-import servo_control
-import tft_display
 
 def servo_test():
+    import servo_control
     lst = ['w9', 'w2', 'w6', 't3', 's', 't1', 'b7', 'w', 'w9', 'b6', 'w8', 'b6', 't9', 'r']
     while True:
 
@@ -30,6 +29,8 @@ def servo_test():
         servo_control.run_control(lst,tile)
 
 def tft_test():
+    import tft_display
+    from time import sleep
     tft = tft_display.screen_object()
     counter = 0
     prompt_round = f"Round {counter}"
@@ -43,5 +44,8 @@ def tft_test():
       tft_display.display_smaller_top(tft, prompt_round)
       tft_display.display_big_center(tft, prompt_ready)
       tft_display.display_smaller_lower(tft, prompt_buttons)
+    
+    sleep(5)
+
 
 tft_test()
