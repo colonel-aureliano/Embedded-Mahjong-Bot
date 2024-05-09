@@ -3,6 +3,7 @@ import json
 from player.Player import Player
 import gpio_interface
 import tft_display
+import servo_control
 
 prediction_path = "integrated/predictions.json"
 generate_predicted_image = False
@@ -38,7 +39,8 @@ def play_round(infer : Infer, player : Player, tile_mapping : dict[str, int], re
     
   tile = player.play_tile()
   name = reverse_tile_mapping[tile]
-  return tile, name
+  rack = names
+  return tile, name, rack
 
 #####################################################
 
@@ -71,11 +73,13 @@ def rounds_factored(infer, player, gpio_and_tft: bool):
     print(prompt_playing)
     if (gpio_and_tft): tft_display.display_big_center(tft, prompt_playing)
 
-    played_tile, name = play_round(infer, player, tile_mapping, reverse_tile_mapping, counter)
+    played_tile, name, tile_rack = play_round(infer, player, tile_mapping, reverse_tile_mapping, counter)
     counter += 1
 
     prompt_played = f"Bot plays {name}"
     prompt_next = "Press button 17 to go to next round."
+
+    servo_control.run_control(tile_rack, name)
 
     print(prompt_played)
 
