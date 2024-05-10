@@ -56,37 +56,43 @@ def rounds_factored(infer, player, gpio_and_tft: bool):
   while(not gpio_interface.do_quit):
     prompt_round = f"Round {counter}"
     prompt_ready = "Player ready?"
-    prompt_buttons = "Press button 23 to affirm, 27 to quit."
+    prompt_buttons = "Button 23: affirm ready; button 27: do quit"
 
     print(f"################### {prompt_round} ###################")
     print(f"{prompt_ready}")
 
     if (gpio_and_tft):
-      tft_display.display_smaller_top(tft, prompt_round)
-      tft_display.display_big_center(tft, prompt_ready)
-      tft_display.display_smaller_lower(tft, prompt_buttons)
+      # tft_display.display_smaller_top(tft, prompt_round)
+      # tft_display.display_big_center(tft, prompt_ready)
+      # tft_display.display_smaller_lower(tft, prompt_buttons)
+      tft_display.display_up_to_three_texts(tft, prompt_ready, prompt_round, prompt_buttons)
 
     if (gpio_and_tft): gpio_interface.player_ready()
     else: input()
     prompt_playing = "Playing in process."
 
     print(prompt_playing)
-    if (gpio_and_tft): tft_display.display_big_center(tft, prompt_playing)
+    if (gpio_and_tft): 
+      tft_display.display_up_to_three_texts(tft, prompt_playing)
 
     played_tile, name, tile_rack = play_round(infer, player, tile_mapping, reverse_tile_mapping, counter)
     counter += 1
 
-    prompt_played = f"Bot plays {name}"
-    prompt_next = "Press button 17 to go to next round."
+    # name = 'w7'
+    # tile_rack = ['g', 'b5', 't4', 'e', 'b1', 't4', 'b2', 'b', 'w1', 't7', 't1', 'w7', 'e', 'b3']
 
-    servo_control.run_control(tile_rack, name)
+    prompt_played = f"Bot plays {name}"
+    prompt_next = "Button 17: start next round; button 27: do quit"
+
+    # servo_control.run_control(tile_rack, name)
 
     print(prompt_played)
 
     if (gpio_and_tft): 
       print(prompt_next)
-      tft_display.display_big_center(tft, prompt_played)
-      tft_display.display_smaller_lower(tft, prompt_next)
+      # tft_display.display_big_center(tft, prompt_played)
+      # tft_display.display_smaller_lower(tft, prompt_next)
+      tft_display.display_up_to_three_texts(tft, prompt_played, None, prompt_next)
       gpio_interface.go_to_next_round()
     else:
       print("Press enter to continue.")

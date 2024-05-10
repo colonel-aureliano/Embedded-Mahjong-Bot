@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import os
 import tft_display
+import main
 
 GPIO.setmode(GPIO.BCM) 
 GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -17,6 +18,7 @@ def clean_up():
 def GPIO27_callback(channel): 
   global do_quit
   do_quit = True
+  main.clean_up()
 
 GPIO.add_event_detect(27, GPIO.FALLING, callback=GPIO27_callback, bouncetime=300) 
 

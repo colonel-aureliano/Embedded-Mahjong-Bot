@@ -40,14 +40,14 @@ class Infer:
         classes_path = "tile_classifier/onnx/weights/class_labels.yaml"
         h,w = 2464,3280
         # h,w = 80, 800
-        score_threshold = 0.05
-        conf_threshold = 0.2
+        # score_threshold = 0.1
+        conf_threshold = 0.4
         iou_threshold = 0.4   # intersection over union threshold
         device = "cpu"
         return YOLOv9(model_path=weights_path,
                         class_mapping_path=classes_path,
                         original_size=(w, h),
-                        score_threshold=score_threshold,
+                        # score_threshold=score_threshold, # use default 0.1
                         conf_thresold=conf_threshold,
                         iou_threshold=iou_threshold,
                         device=device)
@@ -82,6 +82,8 @@ class Infer:
                     if isinstance(value, np.ndarray):
                         d[key] = value.tolist()
                     elif isinstance(value, np.int64):
+                        d[key] = int(value)
+                    elif isinstance(value, np.intc):
                         d[key] = int(value)
                     elif isinstance(value, np.float32):
                         d[key] = float(value)

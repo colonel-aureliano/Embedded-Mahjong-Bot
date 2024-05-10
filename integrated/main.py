@@ -19,6 +19,7 @@ def main():
 
 def clean_up():
   gpio_interface.clean_up()
+  print("Button 27 pressed. Bye!")
   os._exit(0)
 
 #####################################################

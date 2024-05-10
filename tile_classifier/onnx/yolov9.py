@@ -1,11 +1,11 @@
-import pyrootutils
+# import pyrootutils
 
-ROOT = pyrootutils.setup_root(
-    search_from=__file__,
-    indicator=["requirements.txt"],
-    pythonpath=True,
-    dotenv=True,
-)
+# ROOT = pyrootutils.setup_root(
+#     search_from=__file__,
+#     indicator=["requirements.txt"],
+#     pythonpath=True,
+#     dotenv=True,
+# )
 
 import cv2
 import time

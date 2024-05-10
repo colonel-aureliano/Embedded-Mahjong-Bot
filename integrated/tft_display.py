@@ -18,35 +18,45 @@ os.putenv('DISPLAY','')
 size = width, height = 320, 240 
 
 pygame.init()
-
+pygame.mouse.set_visible(False)
 font_big = pygame.font.Font(None, 50)
 font_small = pygame.font.Font(None, 30)
+font_real_small = pygame.font.Font(None, 20)
 
 def clean_up():
   pygame.quit()
 
+def display_up_to_three_texts(screen, text1, text2=None, text3=None):
+  screen.fill(BLACK)
+  display_big_center(screen, text1)
+  if text2 != None:
+    display_smaller_top(screen, text2)
+  if text3 != None:
+    display_smaller_lower(screen, text3)
+  pygame.display.flip()
+
 #####################################################
 
 def display_smaller_top(screen, text):
-  screen.fill(BLACK)
+  # screen.fill(BLACK)
   text_surface = font_small.render(text, True, WHITE)
   rect = text_surface.get_rect(center=TOP)
   screen.blit(text_surface, rect)
-  pygame.display.flip()
+  # pygame.display.flip()
 
 def display_big_center(screen, text):
-  screen.fill(BLACK)
+  # screen.fill(BLACK)
   text_surface = font_big.render(text, True, WHITE)
   rect = text_surface.get_rect(center=CENTER)
   screen.blit(text_surface, rect)
-  pygame.display.flip()
+  # pygame.display.flip()
 
 def display_smaller_lower(screen, text):
-  screen.fill(BLACK)
-  text_surface = font_small.render(text, True, WHITE)
+  # screen.fill(BLACK)
+  text_surface = font_real_small.render(text, True, WHITE)
   rect = text_surface.get_rect(center=LOWER)
   screen.blit(text_surface, rect)
-  pygame.display.flip()
+  # pygame.display.flip()
 
 #####################################################
 
@@ -63,7 +73,6 @@ def trial(screen):
   sleep(10)
 
 def main():
-  # pygame.mouse.set_visible(False)
   screen = pygame.display.set_mode(size) 
   trial(screen)
   clean_up()
