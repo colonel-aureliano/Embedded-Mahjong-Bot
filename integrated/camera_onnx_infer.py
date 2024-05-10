@@ -1,4 +1,5 @@
 import sys
+from aem import con
 import cv2
 import json
 import numpy as np
@@ -75,6 +76,64 @@ class Infer:
 
         pred : list[dict] = self.inferred_detections(self.detector, self.photo_path, generate_image or len(args) > 2 and args[2] == '-generate-image')
         pred.sort(key=lambda d: d['box'][0])
+
+        if (len(pred) > 14):
+            consecutive_boxes = [] # indices of consecutive boxes
+            consecutive_idx = 0
+            i = 0
+            while (i < len(pred) - 1):
+                current_box = pred[i]['box'][0]
+                next_box = pred[i+1]['box'][0]
+                if abs(current_box - next_box) <= 150:
+                    consecutive_boxes.append([])
+                    consecutive_boxes[consecutive_idx].append(i)
+                    consecutive_boxes[consecutive_idx].append(i+1)
+                    i3 = i + 2
+                    while (i3 < len(pred) and abs(current_box - pred[i3]['box'][0]) <= 150):
+                        consecutive_boxes[consecutive_idx].append(i3)
+                        i3 += 1
+                    consecutive_idx += 1
+                    i = i3
+                else:
+                    i += 1
+
+            # if consecutive_boxes:
+            #     print(f"{len(consecutive_boxes)} consecutive boxes within 150:")
+            #     print(consecutive_boxes)
+            # else:
+            #     print("No consecutive boxes within 150")
+
+            if consecutive_boxes:
+                # new_pred with default length 14
+                new_pred = [None] * 14 
+                written_idx = 0
+                pred_processed_up_to = 0
+
+                for i in range(len(consecutive_boxes)):
+                    boxes = consecutive_boxes[i]
+                    all_preds_within_150 = []
+                    first_idx = boxes[0]
+                    if(written_idx < first_idx):
+                        for i in range(written_idx, first_idx):
+                            new_pred[i] = pred[i]
+                    for idx in boxes:
+                        all_preds_within_150.append(pred[idx])
+                    
+                    pred_processed_up_to = boxes[-1]
+
+                    # Find the box with the highest confidence
+                    highest_confidence_box = max(all_preds_within_150, key=lambda x: x['confidence'])
+                    new_pred[first_idx] = highest_confidence_box
+                    written_idx = first_idx + 1
+                
+                for i in range(written_idx, 14):
+                    pred_processed_up_to += 1
+                    new_pred[i] = pred[pred_processed_up_to]
+
+                # print(f"Found {len(new_pred)} tiles")
+                # for d in new_pred:
+                #     print(d)
+                pred = new_pred
 
         if len(args) > 2 and args[2] == '-json':
             for d in pred:
