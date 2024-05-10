@@ -10,8 +10,7 @@ Several aspects of our work include:
 We render at the end a bot player that can play with three other human players and together hold a game of Mahjong.
 
 ### Usage
-It is recommended to consult installation.txt first for installation steps.
-
+It is recommended to consult `installation.txt` first for installation steps.
 
 #### Main Usage
 To run the bot player, call from root directory
@@ -21,11 +20,39 @@ sudo python integrated/main.py
 The possible command arguments are `cmd` to confine to command line interaction only, and `img` to output prediction image with confidence levels displayed.
 
 #### Test Usages
-The following command automates of the process of taking a picture with Pi Camera and then generating detections of the Mahjong tiles in the picture. It is to be called from root directory.
+<ol>
+<li>The following command automates of the process of taking a picture with Pi Camera and then generating detections of the Mahjong tiles in the picture. It is to be called from root directory.
 ```
 python integrated/camera_onnx_infer.py -shoot -json
 ```
-This command uses an `onnx` model exported from an instance of `Yolo-v9` model. We trained the yolo model ourselves.
+This command uses an `onnx` model exported from an instance of `Yolo-v9` model. The model weights we trained are stored at `tile_classifier/onnx/weights/best-v4-800-half-fp32.onnx`.
+`shoot` and `json` inform the script to immediately shoot using Pi Camera, do inference, and store the results to a json file. 
+Other possible arguments in place of `shoot ` are `shoot-wait` which waits on an enter from command line to shoot the photo, and `single` which does not take new photo but instead reads existing photo and performs inference.
+</li>
+
+<li>The following command runs the playing algorithm; it determines which tile to play given 14 tiles.
+```
+python player/test.py
+```
+Uncommenting some lines of code in the script will also test the hand parititioning algorithm. To partition a hand is to divide the 14 tiles into sequences, triplets, couplets, quadruplets, or singles. The playing algorithm uses the partition algorithm and performs scoring on each of the tiles based on it. The tile with least score is played.
+</li>
+
+<li>The following command tests whether the PyGame library can successfully manipulate PiTFT display.
+```
+python integrated/tft_display.py
+```
+If unsuccessful, consider chaning the OS of the Pi. We used **Bullseye** 64-bit OS with PyGame version 1.9.6 and Python version 3.8.6. We were unable to make Bookworm OS work with PyGame version 2.1.2.
+</li>
+
+<li>The following command loads an ONNX model and performs inference on a source image.
+```
+cd tile_classifier/onnx
+python main.py
+```
+See the script itself for required command line arguments.
+</li>
+
+</ol>
 
 ### Resources:
 * https://universe.roboflow.com/test01-8ymsa/4a41f234e48d49b5b335f25643ca0293
