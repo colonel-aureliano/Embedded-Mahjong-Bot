@@ -1,5 +1,4 @@
 import sys
-from aem import con
 import cv2
 import json
 import numpy as np
@@ -42,7 +41,7 @@ class Infer:
         h,w = 2464,3280
         # h,w = 80, 800
         # score_threshold = 0.1
-        conf_threshold = 0.4
+        conf_threshold = 0.3
         iou_threshold = 0.4   # intersection over union threshold
         device = "cpu"
         return YOLOv9(model_path=weights_path,
@@ -56,6 +55,7 @@ class Infer:
     def shoot_detect_to_json(self,predictions_path,generate_image = False):
         self.prediction_path = predictions_path
         self.run(["", "-shoot", "-json"], generate_image)
+        # self.run(["", "-single"], generate_image = True)
 
     def run(self,args,generate_image = False):
         if len(args) <= 1 or args[1] not in ["-single", "-shoot-wait", '-shoot']:

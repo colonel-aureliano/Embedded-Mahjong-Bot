@@ -10,7 +10,7 @@ import gpio_interface
 def main():
   infer = Infer()
   player = Player()
-  end = rounds.rounds_gpio(infer, player)
+  end = rounds.rounds_gpio(infer, player, button_next=True)
   # end = rounds.rounds_command_line(infer, player)
   if (end):
     print("Bye!")
@@ -19,7 +19,6 @@ def main():
 
 def clean_up():
   gpio_interface.clean_up()
-  print("Button 27 pressed. Bye!")
   os._exit(0)
 
 #####################################################
@@ -58,5 +57,15 @@ if __name__ == "__main__":
         print("Deleted log file due to exception.")
     except Exception as e:
         print(f"Failed to delete log file: {e}")
-    
+  except KeyboardInterrupt:
+    with open(log_filename, "r") as log_file:
+      if "Playing in process." not in log_file.read():
+          try:
+              os.remove(log_filename)
+              print("Deleted log file due to missing meaningful content.")
+          except Exception as e:
+              print(f"Failed to delete log file: {e}")
+      else:
+        pass
+  finally: 
     clean_up()

@@ -44,7 +44,7 @@ def play_round(infer : Infer, player : Player, tile_mapping : dict[str, int], re
 
 #####################################################
 
-def rounds_factored(infer, player, gpio_and_tft: bool):
+def rounds_factored(infer, player, gpio_and_tft: bool, button_next: bool = False):
   with open("integrated/player_tile_mapping.json") as f:
     tile_mapping = json.load(f)
   
@@ -52,11 +52,14 @@ def rounds_factored(infer, player, gpio_and_tft: bool):
   counter = 1
 
   tft = tft_display.screen_object()
+  prompt_ready = "Player ready?"
+  prompt_quit = "button 27: do quit"
+  prompt_playing = "Playing..."
 
   while(not gpio_interface.do_quit):
     prompt_round = f"Round {counter}"
-    prompt_ready = "Player ready?"
-    prompt_buttons = "Button 23: affirm ready; button 27: do quit"
+    
+    prompt_buttons = f"Button 23: affirm ready; {prompt_quit}"
 
     print(f"################### {prompt_round} ###################")
     print(f"{prompt_ready}")
@@ -69,8 +72,7 @@ def rounds_factored(infer, player, gpio_and_tft: bool):
 
     if (gpio_and_tft): gpio_interface.player_ready()
     else: input()
-    prompt_playing = "Playing in process."
-
+    
     print(prompt_playing)
     if (gpio_and_tft): 
       tft_display.display_up_to_three_texts(tft, prompt_playing)
@@ -80,9 +82,16 @@ def rounds_factored(infer, player, gpio_and_tft: bool):
 
     # name = 'w7'
     # tile_rack = ['g', 'b5', 't4', 'e', 'b1', 't4', 'b2', 'b', 'w1', 't7', 't1', 'w7', 'e', 'b3']
-
+    
+    sleep_time = 0
     prompt_played = f"Bot plays {name}"
-    prompt_next = "Button 17: start next round; button 27: do quit"
+    if button_next:
+      prompt_next = "Button 17: start next round"
+      wait_on_button = True
+    else:
+      sleep_time = 5
+      prompt_next = f"{sleep_time} seconds till next round"
+      wait_on_button = False
 
     # servo_control.run_control(tile_rack, name)
 
@@ -92,8 +101,8 @@ def rounds_factored(infer, player, gpio_and_tft: bool):
       print(prompt_next)
       # tft_display.display_big_center(tft, prompt_played)
       # tft_display.display_smaller_lower(tft, prompt_next)
-      tft_display.display_up_to_three_texts(tft, prompt_played, None, prompt_next)
-      gpio_interface.go_to_next_round()
+      tft_display.display_up_to_three_texts(tft, prompt_played, prompt_next, prompt_quit)
+      gpio_interface.go_to_next_round(wait_on_button, sleep_time)
     else:
       print("Press enter to continue.")
       input()
@@ -104,7 +113,7 @@ def rounds_factored(infer, player, gpio_and_tft: bool):
 #####################################################
 
 
-def rounds_gpio(infer, player):
+def rounds_gpio(infer, player, button_next: bool = False):
   """
   Executes the rounds of the game using GPIO interface.
   Displays status to PiTFT.
@@ -118,7 +127,7 @@ def rounds_gpio(infer, player):
 
   """
 
-  return rounds_factored(infer, player, True)
+  return rounds_factored(infer, player, True, button_next)
 
 
 def rounds_command_line(infer, player):
