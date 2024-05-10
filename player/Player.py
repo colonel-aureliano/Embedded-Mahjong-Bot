@@ -5,7 +5,7 @@
 # honors east - white is 31 - 37
 # seasons is 38 - 41
 
-from .HandPartitioner import HandPartitioner
+from HandPartitioner import HandPartitioner
 
 class Player:
   partitioner : HandPartitioner = None
@@ -107,13 +107,15 @@ class Player:
         for tile in tile_list:
           suit : int = tile // 9
           if suit not in self.suit_name_index_mapping_dict['honor']:
-            __jinzhang_for_suit(suit, tiles_out_there[tile-1] + tiles_out_there[tile+1])
+            __jinzhang_for_suit(suit, (tiles_out_there[tile-1] + tiles_out_there[tile+1]) // 2)
           # supporting JinZhang that form incomplete sequences, i.e. 7 turning into 7,8 or 6,7
       else:
         continue
 
     return bamboo_character_dot_honors_jinzhang_dict
-    
+
+  def in_same_suit(self, tile1: int, tile2: int) -> bool:
+    return tile1 // 9 == tile2 // 9    
 
   def __jinzhang(self, hand: list[int], tiles_out_there) -> dict[int, int]:
     # assuming len(hand) <= 14, no flowers or seasons
@@ -132,26 +134,44 @@ class Player:
     jinzhang = {}
 
     for tile in set(hand):
+      suit : int = tile // 9                  # 0 for bamboo, 1 for character, 2 for dot, 3 or 4 for honors
       jinzhang_count_on_other_suits : int = 0
-      suit : int = tile // 9                    # 0 for bamboo, 1 for character, 2 for dot, 3 or 4 for honors
-      # accumulate all values in bamboo_character_dot_honors_jinzhang_dict not belonging to the suit
-      for key, value in bamboo_character_dot_honors_jinzhang_dict.items():
-        if (key == 'bamboo' and suit != 0):
-          jinzhang_count_on_other_suits += value
-        elif (key == 'character' and suit != 1):
-          jinzhang_count_on_other_suits += value
-        elif (key == 'dot' and suit != 2):
-          jinzhang_count_on_other_suits += value
-        elif (key == 'honor' and suit != 3 and suit != 4):
-          jinzhang_count_on_other_suits += value
-        else:
-          continue
-      # then calculate JinZhang for the same suit minus current tile
-      new_hand = hand.copy()
-      new_hand.remove(tile)
-      new_hand = [x for x in new_hand if x // 9 == suit]
-      # add them together
-      jinzhang[tile] = jinzhang_count_on_other_suits + self.__jinzhang_on_suite(tiles_out_there, new_hand)[self.suit_name_index_mapping_dict[suit]]
+      # # accumulate all values in bamboo_character_dot_honors_jinzhang_dict not belonging to the suit
+      # for key, value in bamboo_character_dot_honors_jinzhang_dict.items():
+      #   if (key == 'bamboo' and suit != 0):
+      #     jinzhang_count_on_other_suits += value
+      #   elif (key == 'character' and suit != 1):
+      #     jinzhang_count_on_other_suits += value
+      #   elif (key == 'dot' and suit != 2):
+      #     jinzhang_count_on_other_suits += value
+      #   elif (key == 'honor' and suit != 3 and suit != 4):
+      #     jinzhang_count_on_other_suits += value
+      #   else:
+      #     continue
+      
+      # print(jinzhang_count_on_other_suits)
+
+      # then calculate JinZhang for the same suit with respect to only the current tile
+      # number of tiles out there the same as itself
+      jinzhang[tile] = jinzhang_count_on_other_suits + tiles_out_there[tile]
+      if (suit in self.suit_name_index_mapping_dict['honor']): 
+        continue
+
+      if (self.in_same_suit(tile-1, tile)):
+        jinzhang[tile] += tiles_out_there[tile-1]      # number of tiles out there adjacent to itself
+        if (tile - 1 in hand and self.in_same_suit(tile-2, tile-1)):
+          jinzhang[tile] += tiles_out_there[tile-2]     # number of tiles out there 2 tiles away from itself
+      if (self.in_same_suit(tile+1, tile)):
+        jinzhang[tile] += tiles_out_there[tile+1]
+        if (tile + 1 in hand and self.in_same_suit(tile+2, tile+1)):
+          jinzhang[tile] += tiles_out_there[tile+2]
+      
+      # # then calculate JinZhang for the same suit minus current tile
+      # new_hand = hand.copy()
+      # new_hand.remove(tile)
+      # new_hand = [x for x in new_hand if x // 9 == suit]
+      # # add them together
+      # jinzhang[tile] = jinzhang_count_on_other_suits + self.__jinzhang_on_suite(tiles_out_there, new_hand)[self.suit_name_index_mapping_dict[suit]]
     
     return jinzhang
 
@@ -203,23 +223,31 @@ class Player:
         continue
 
     # 2. Calculate for each of the rest of the tiles, the number of "JinZhang"    
-    jinzhang_dict = self.__jinzhang(simulated_hand, tiles_out_there)
-    # print(jinzhang_dict)
+    jinzhang_dict : dict[int, int]= self.__jinzhang(simulated_hand, tiles_out_there)
 
-    # 3. Play the tile with highest score
-    # In case of tie, play the one that is not part of a couplet in patterns
-    max_tiles = []
-    max_score = 0
-    for tile, score in jinzhang_dict.items():
-      if score > max_score:
-        max_score = score
-        max_tiles = [tile]
-      elif score == max_score:
-        max_tiles.append(tile)
-    # tile = max(jinzhang_dict, key=jinzhang_dict.get)
-    for tile in max_tiles:
-      if tile in patterns['couplet']:
-        continue
-      return tile
+    for key, tile_list in patterns.items():
+      if key == 'couplet':
+        for tile in tile_list:
+          jinzhang_dict[tile] += 8
+
+    # print(sorted(jinzhang_dict.items(), key=lambda x: x[1])) 
+
+    # # 3. Play the tile with max score    
+    # # In case of tie, play the one that is not part of a couplet in patterns
+    # min_tiles = []
+    # min_score = 0
+    # for tile, score in jinzhang_dict.items():
+    #   if score < min_score:
+    #     min_score = score
+    #     min_score = [tile]
+    #   elif score == min_score:
+    #     min_score.append(tile)
+    # for tile in min_score:
+    #   if tile in patterns['couplet']:
+    #     continue
+    #   return tile
+
+    # 3. Play the tile with max score
+    tile = min(jinzhang_dict, key=jinzhang_dict.get)
 
     return tile
