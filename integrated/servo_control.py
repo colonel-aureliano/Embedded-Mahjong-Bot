@@ -89,7 +89,7 @@ def run_control(rack, played):
         #p.ChangeDutyCycle(pointer)     # Changes the pulse width to 3 (so moves the servo)
         pi_hw.hardware_PWM(13, 50, in_dc)
         time.sleep(2)                 # Wait 1 second
-    pi_hw.hardware_PWM(13, 50, end_dc)
+    # pi_hw.hardware_PWM(13, 50, end_dc)
 
         # Clean up everything
     pi_hw.stop()

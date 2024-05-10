@@ -4,6 +4,7 @@ from player.Player import Player
 import gpio_interface
 import tft_display
 import servo_control
+from time import sleep
 
 prediction_path = "integrated/predictions.json"
 generate_predicted_image = False
@@ -13,7 +14,7 @@ generate_predicted_image = False
 def play_round(infer : Infer, player : Player, tile_mapping : dict[str, int], reverse_tile_mapping, counter: int) -> int:
 
   player.reset_hand()
-  infer.shoot_detect_to_json(prediction_path, generate_predicted_image)
+  unsorted_pred = infer.shoot_detect_to_json(prediction_path, generate_predicted_image)
 
   # read predictions.json
   with open(prediction_path) as f:
@@ -28,23 +29,27 @@ def play_round(infer : Infer, player : Player, tile_mapping : dict[str, int], re
   
   print(f"Detected: {names}")
 
-  if(len(tiles) != 14):
-    for _ in range(14-len(tiles)):
-      name = input("Add missing tile: ")
-      names.append(name)
-      tiles.append(tile_mapping[name])
+  if(len(tiles) < 14):
+    return -1, None, None
+    # for _ in range(14-len(tiles)):
+    #   print("Add missing tile: ")
+    #   name = input()
+    #   names.append(name)
+    #   tiles.append(tile_mapping[name])
 
   for tile in tiles:
     player.add_tile(tile)
     
   tile = player.play_tile()
+  if (tile == -2): return tile, None, None
   name = reverse_tile_mapping[tile]
   rack = names
+
   return tile, name, rack
 
 #####################################################
 
-def rounds_factored(infer, player, gpio_and_tft: bool, button_next: bool = False):
+def rounds_factored(infer, player, gpio_input_only: bool, button_next: bool = False):
   with open("integrated/player_tile_mapping.json") as f:
     tile_mapping = json.load(f)
   
@@ -55,6 +60,10 @@ def rounds_factored(infer, player, gpio_and_tft: bool, button_next: bool = False
   prompt_ready = "Player ready?"
   prompt_quit = "button 27: do quit"
   prompt_playing = "Playing..."
+  prompt_won = "Bot won!"
+
+  if not gpio_input_only:
+    print("WARNING: GPIO inputs do not work. Use command line only.")
 
   while(not gpio_interface.do_quit):
     prompt_round = f"Round {counter}"
@@ -64,25 +73,29 @@ def rounds_factored(infer, player, gpio_and_tft: bool, button_next: bool = False
     print(f"################### {prompt_round} ###################")
     print(f"{prompt_ready}")
 
-    if (gpio_and_tft):
-      # tft_display.display_smaller_top(tft, prompt_round)
-      # tft_display.display_big_center(tft, prompt_ready)
-      # tft_display.display_smaller_lower(tft, prompt_buttons)
-      tft_display.display_up_to_three_texts(tft, prompt_ready, prompt_round, prompt_buttons)
+    tft_display.display_up_to_three_texts(tft, prompt_ready, prompt_round, prompt_buttons)
 
-    if (gpio_and_tft): gpio_interface.player_ready()
+    if (gpio_input_only): gpio_interface.player_ready()
     else: input()
     
     print(prompt_playing)
-    if (gpio_and_tft): 
-      tft_display.display_up_to_three_texts(tft, prompt_playing)
+    tft_display.display_up_to_three_texts(tft, prompt_playing)
 
     played_tile, name, tile_rack = play_round(infer, player, tile_mapping, reverse_tile_mapping, counter)
+    if (played_tile == -2):
+      # won
+      print(prompt_won)
+      tft_display.display_up_to_three_texts(tft, prompt_won, None, "Button 17: confirm")
+      if (gpio_input_only): gpio_interface.confirm_won()
+      else: sleep(4)
+      break
+    elif (played_tile == -1):
+      print("Number of tiles wrong. Retry.")
+      tft_display.display_up_to_three_texts(tft, "Retry", "Number of tiles wrong.")
+      sleep(5)
+      continue
     counter += 1
-
-    # name = 'w7'
-    # tile_rack = ['g', 'b5', 't4', 'e', 'b1', 't4', 'b2', 'b', 'w1', 't7', 't1', 'w7', 'e', 'b3']
-    
+ 
     sleep_time = 0
     prompt_played = f"Bot plays {name}"
     if button_next:
@@ -92,16 +105,14 @@ def rounds_factored(infer, player, gpio_and_tft: bool, button_next: bool = False
       sleep_time = 5
       prompt_next = f"{sleep_time} seconds till next round"
       wait_on_button = False
-
-    # servo_control.run_control(tile_rack, name)
-
+    
     print(prompt_played)
+    tft_display.display_up_to_three_texts(tft, prompt_played, prompt_next, prompt_quit)
 
-    if (gpio_and_tft): 
+    servo_control.run_control(tile_rack, name)
+
+    if (gpio_input_only): 
       print(prompt_next)
-      # tft_display.display_big_center(tft, prompt_played)
-      # tft_display.display_smaller_lower(tft, prompt_next)
-      tft_display.display_up_to_three_texts(tft, prompt_played, prompt_next, prompt_quit)
       gpio_interface.go_to_next_round(wait_on_button, sleep_time)
     else:
       print("Press enter to continue.")
@@ -113,7 +124,7 @@ def rounds_factored(infer, player, gpio_and_tft: bool, button_next: bool = False
 #####################################################
 
 
-def rounds_gpio(infer, player, button_next: bool = False):
+def rounds(infer, player, gpio_input_only: bool, button_next: bool = False):
   """
   Executes the rounds of the game using GPIO interface.
   Displays status to PiTFT.
@@ -127,37 +138,4 @@ def rounds_gpio(infer, player, button_next: bool = False):
 
   """
 
-  return rounds_factored(infer, player, True, button_next)
-
-
-def rounds_command_line(infer, player):
-  """
-  Executes the command line interface for playing rounds of the game.
-
-  Args:
-    infer: The inference model used for making decisions.
-    player: The player object representing the human player.
-
-  Returns:
-    bool: True if the function executes successfully.
-
-  """
-  return rounds_factored(infer, player, False)
-
-#   with open("integrated/player_tile_mapping.json") as f:
-#     tile_mapping = json.load(f)
-  
-#   reverse_tile_mapping = {v: k for k, v in tile_mapping.items()}
-#   counter = 1
-
-#   while(True):
-#     print(f"################### Round {counter} ###################")
-#     print("Player ready? (type q to quit)")
-#     command = input()
-#     if (command == 'q'): break
-#     print("Playing in process.")
-#     played_tile, name = play_round(infer, player, tile_mapping, reverse_tile_mapping, counter)
-#     counter += 1
-#     print(f"Bot plays {name}")
-  
-#   return True
+  return rounds_factored(infer, player, gpio_input_only, button_next)

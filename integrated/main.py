@@ -10,9 +10,10 @@ import gpio_interface
 def main():
   infer = Infer()
   player = Player()
-  end = rounds.rounds_gpio(infer, player, button_next=True)
-  # end = rounds.rounds_command_line(infer, player)
+  cmdline_input_only = True
+  end = rounds.rounds(infer, player, not cmdline_input_only, button_next=False)
   if (end):
+    sys.stdout.flush()
     print("Bye!")
   else:
     print("Game ended unexpectedly.")
@@ -33,7 +34,8 @@ class Logger:
         self.log.write(message)
 
     def flush(self):
-        pass
+        self.terminal.flush()
+        self.log.flush()
     
 if __name__ == "__main__":
   current_time = datetime.now()
@@ -52,20 +54,14 @@ if __name__ == "__main__":
     traceback.print_exc()
 
     # Delete the log file if an exception is thrown
-    try:
-        os.remove(log_filename)
-        print("Deleted log file due to exception.")
-    except Exception as e:
-        print(f"Failed to delete log file: {e}")
+    # try:
+    #     os.remove(log_filename)
+    #     print("Deleted log file due to exception.")
+    # except Exception as e:
+    #     print(f"Failed to delete log file: {e}")
+  
   except KeyboardInterrupt:
-    with open(log_filename, "r") as log_file:
-      if "Playing in process." not in log_file.read():
-          try:
-              os.remove(log_filename)
-              print("Deleted log file due to missing meaningful content.")
-          except Exception as e:
-              print(f"Failed to delete log file: {e}")
-      else:
-        pass
+    print("Interrupted.")
   finally: 
+    print("cleaning up")
     clean_up()

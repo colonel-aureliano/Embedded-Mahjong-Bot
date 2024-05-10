@@ -48,6 +48,7 @@ class Player:
     if (len(self.current_hand) > 14):
       raise Exception("Hand is overfull")
     tile = self.__decision()
+    if (tile == -2): return tile
     self.current_hand.remove(tile)
     return tile
 
@@ -221,6 +222,16 @@ class Player:
           simulated_hand.remove(tile)
       else:
         continue
+
+    winning_hand = simulated_hand.copy()
+    for key, tile_list in patterns.items():
+      if key == 'couplet':
+        winning_hand.remove(tile_list[0])
+        winning_hand.remove(tile_list[0])
+      else:
+        continue
+    
+    if (len(winning_hand) == 0): return -2
 
     # 2. Calculate for each of the rest of the tiles, the number of "JinZhang"    
     jinzhang_dict : dict[int, int]= self.__jinzhang(simulated_hand, tiles_out_there)
