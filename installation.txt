@@ -4,5 +4,10 @@ sudo apt install -y python3-pyqt5 python3-opengl
 # Else
 # sudo apt install -y python3-picamera2
 
-pip install inference-sdk
-pip install Pillow
+# Install pygame to manipulate PiTFT
+pip install pygame
+
+# ONNX inference model libraries
+# pip install onnxruntime-1.9.1-cp39-cp39-linux_armv7l.whl
+pip install onnxruntime
+pip install -r tile_classifier/onnx/requirements.txt
