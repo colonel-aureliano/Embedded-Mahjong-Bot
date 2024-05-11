@@ -1,9 +1,9 @@
 .DS_Store
-*.jpg
-*.jpeg
+camera/*.jpg
+integrated/*.jpg
 *temp*
 __pycache__*
 *predictions.txt
 *predictions.json
 tile_classifier/data/*
-logs/*
+logs/*.txt
