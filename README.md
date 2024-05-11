@@ -1,4 +1,6 @@
 # Embedded Mahjong Bot
+![Station](website/images/station.jpg)
+
 A bot player that detects Mahjong tiles and plays a tile each round. Designed to work on **Raspberry Pi 4** with a Pi Camera and a rack of Mahjong tiles facing it.
 
 Several aspects of our work include:
@@ -38,7 +40,7 @@ Uncommenting some lines of code in the script will also test the hand paritition
 ```
 python integrated/tft_display.py
 ```
-If unsuccessful, consider chaning the OS of the Pi. We used **Bullseye** 64-bit OS with PyGame version 1.9.6 and Python version 3.8.6. We were unable to make Bookworm OS work with PyGame version 2.1.2.
+If unsuccessful, consider chaning the OS of the Pi. We used **Bullseye** 64-bit OS with PyGame version 1.9.6 and Python version 3.9.2. We were unable to make Bookworm OS work with PyGame version 2.5.2 adn Python version 3.11.2 to display to PiTFT.
 
 4. The following command loads an ONNX model and performs inference on a source image.
 ```
@@ -47,10 +49,10 @@ python main.py
 ```
 See the script itself for required command line arguments.
 
-### Resources:
+### Resources
 * https://universe.roboflow.com/test01-8ymsa/4a41f234e48d49b5b335f25643ca0293
 
-### Acknowledgements:
+### Acknowledgements
 * https://github.com/WongKinYiu/yolov9
 * https://github.com/danielsyahputra/yolov9-onnx
 * https://github.com/JohnnyLiang1018/MahjongAI/tree/master/offline_mahjong
