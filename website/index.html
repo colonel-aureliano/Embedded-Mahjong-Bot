@@ -18,8 +18,8 @@
         <a href="index.html" class="drop" id="home">Home</a>
         <!-- class block toggles their view when the screen is narrow -->
         <a class="" href="#introduction">Intro</a>
-        <a class="" href="#design">Design</a>
-        <a class="" href="#testing">Testing</a>
+        <a class="" href="#demo">Demo</a>
+        <a class="" href="#design">Design & Testing</a>
         <a class="" href="#result">Results</a>
         <a class="" href="#future">Future</a>
         <a class="" href="#info">Info</a>
@@ -42,7 +42,7 @@
       <h4>by Yanny Zhu(rz367) and Rachel Yan(sy625)</h4>
     </div>
     <div class="introtext">
-      Automatic Mahjong Player when you need help with your game!
+      Automatic Mahjong Player when you need an extra player!
     </div>
   </div>
 
@@ -50,30 +50,113 @@
   <main>
     <h2 id="introduction">Introduction</h2>
     <h3>Objective</h3>
-    <p class="project">text</p>
+    <p class="project">
+      Mahjong is a type of Chinese board game where four players are required for a game. Often times, people find it
+      hard to always find four people for the game, often there are only three. Therefore, it became a problem that a
+      fourth player is needed. To solve this problem, our team worked on the embedded mahjong player, so that it can
+      play along as the extra player to help start the game.
+    </p>
+    <p class="project">
+      Our project first uses the Pi Camera to take photos of Mahjong tiles, and uses the photos to train the computer
+      vision model, and then uses the trained model to identify the tiles. Next, the Mahjong algorithm would determine
+      which tile it should play this round, and send the instruction to the PiTFT and servo to indicate the played tile.
+      Displays and buttons on the PiTFT are also used as round controls.
+    </p>
 
-    <h2 id="design">Design</h2>
-    <p class="project">text</p>
 
-    <h2 id="testing">Testing</h2>
-    <p class="project">text</p>
+    <h2 id="demo">Demo Video</h2>
+    <p class="project">
+      Describe testing you performed to confirm that development steps of the project performed as planned.
+    </p>
+
+
+    <h2 id="design">Design and Testing</h2>
+    <p class="project">
+      Our embedded Mahjong Player is mainly made up of four parts, the Raspberry Pi for main algorithm and operations,
+      the Pi Camera afor taking photos of the Mahjong tiles, the PiTFT for display and button interactions, and the
+      servo for played tile indication.
+    </p>
+    <img class="diagram" src="images/system.png" alt="High-Level Diagram">
+    <p class="caption">System block diagram</p>
+    <p class="project">
+      When implementing the pointer to the tile being player, we first decided to use software PWM signal as we did in
+      lab 3 of the class. We connected the micro servo with 5V power, Ground according to the datasheet of the servo,
+      and connected the input signal to pin 26, which is the PWM pin clean to use on the Pi. We setup the pin as in lab,
+      and tested out the duty cycle range for for controlling the servo. When duty cycle is between 3% to 12%, the servo
+      will spin through 180 degrees. However, since our Mahjong rack only takes one part of the plane. We decided to use
+      value between 5% and 9% for indication.
+    </p>
+    <p class="project">
+      To allow the pointer point to the specific value, the tile index from the current list of identified tiles is
+      being passed as an argument into the servo control function. Then we decided to use a mapping function to map the
+      values of 0 through 13 index of the tiles to range 5% to 9% of the servo duty cycle.
+    </p>
+    <p class="project">
+      During the testing stage of the pointer, we found that the pointer is not very accurate, and it
+      is often pointing a bit to the side, or pointing between two tiles, which makes it hard to identify which tile is
+      it playing. In addition, the servo seems to be shaky, and not able to stay stable during the pointing for even 2
+      seconds. After some help from the professor, we switched to hardware PWM, which generates steady waves and
+      prevented the shaking. In addition, we also specifically tested out each tile to seaerch for a more specific
+      value, and then directly mapped each tile to a specific duty cycle value in a dictionary to solve the accuracy
+      issue.
+    </p>
+    <p class="project">
+      Describe testing you performed to confirm that development steps of the project performed as planned.
+    </p>
+
 
     <h2 id="result">Results</h2>
-    <p class="project">text</p>
+    <p class="project">
+      Did everything perform as planned? Did your team meet the goals outlined in the description?
+    </p>
+    <p class="project">
+      Our project is generally able to achieve our initial goals. First the detection system is able to identify the
+      Mahjong card in high accuracy, and the Mahjong playing algorithm is also able to identify the correct card to play
+      even the orders or the tiles are shuffled. Finally, the PiTFT and the pointer are also able to accurately indicate
+      the current stage of play and the current tile being played.
+    </p>
+    <p class="project">
+      However, the camera system had not been ideal, with a 6-8 second delay in detection and very sensitive requirement
+      to lighting, it cannot deliver accurate results fast and if within an environment where setting is not ideal. In
+      addition, initially we plan to implement a robot arm where it not only points to the card being played, but also
+      pushes or picks the tile, but due to timing and difficulty in implemenentation, this were not achieved and
+      downgraded to a pointer only.
+    </p>
 
     <h2>Conclusion</h2>
-    <p class="project">text</p>
+    <p class="project">
+      In conclusion, our project is able to let the robot become the fourth player with three other human players and
+      together hold a game of Mahjong. It is able to successfully identify the rack of Mahjong tiles it currently holds
+      and decide for the optimal winning solution. The most crucial part of the project is the computer vision training,
+      which took large effort not only to train it on a seperate server, but also takes research to find out the correct
+      way to make it run on raspberry pi.
+    </p>
+    <p class="project"> What absolutely didn't work for the cv i guess.</p>
 
-    <h2 id="future">Future works</h2>
-    <p class="project">text</p>
+    <h2 id="future">Future Works</h2>
+    <p class="project">
+      If given more time on the project, there are two main improvements we are looking for.
+    </p>
+    <p class="project">
+      First improvement is on the indentification of the Mahjong tiles, where now it takes relatively long time to
+      compute. We believe that there could be improvements such as running the camera with multi-core or multi-threading
+      setup. Another possible implementation is that since the tiles get replaced one at a time for each non-winning
+      rounds, we could within the algorithm only compute the new replaced tile identification, instead of reading all 14
+      tiles every single time.
+    </p>
+    <p class="project">
+      The second improvement is on the pointer. If possible we would also like to turn it into a fully functional robot
+      arm, where it picks up the tiles and then put them on the table just like how a human player would. This would
+      help reduce the movement helps from the other human players as well.
+    </p>
 
     <h2 id="info">Code</h2>
-    <p class="project">text</p>
+    <p class="project">All code has been uploaded to Github repository.</p>
 
     <h2>Budget</h2>
     <ul>
       <li>Raspberry Pi 4B - $40.00 (provided)</li>
-      <li>SG92R Micro Servo - $5.95</li>
+      <li>SG90R Micro Servo - $5.95</li>
       <li>Raspberry Pi Camera - $25.00 (provided)</li>
       <li>PiTFT Display - $34.95 (provided)</li>
       <li>Lego blocks - $50 (?)</li>
