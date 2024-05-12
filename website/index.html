@@ -56,8 +56,7 @@
       fourth player is needed. To solve this problem, our team worked on the embedded mahjong player, so that it can
       play along as the extra player to help start the game.
     </p>
-    <img class="diagram" src="images/station.jpg" alt="Full station view">
-    <p class="caption">Full project station view</p>
+    <h3>Description</h3>
     <p class="project">
       Our project first uses the Pi Camera to take photos of Mahjong tiles, and uses the photos to train the computer
       vision model, and then uses the trained model to identify the tiles. Next, the Mahjong algorithm would determine
@@ -67,9 +66,8 @@
 
 
     <h2 id="demo">Demo Video</h2>
-    <p class="project">
-      Describe testing you performed to confirm that development steps of the project performed as planned.
-    </p>
+    <p class="project">Below is the link to our Project Demo Video: </p>
+    <iframe></iframe>
 
 
     <h2 id="design">Design and Testing</h2>
@@ -81,8 +79,87 @@
     <img class="diagram" src="images/system.png" alt="High-Level Diagram">
     <p class="caption">System block diagram</p>
     <p class="project">
-      In terms of software design.
+      In terms of software design, our code comprises four primary modules: tile_classifier, camera, player, and
+      integrated. The first module leverages Yolo-v9 for image classification. The camera module controls the Pi Camera.
+      The player module contains algorithms that govern the moves of the bot player. The integrated module assembles
+      previous three modules and collaborates with GPIO pins and the PiTFT to create an interactive bot player.
     </p>
+
+    <h3>Tile Classifier</h3>
+    <p class="project">
+      We developed these modules sequentially, starting with the tile classifier. Our objective was to train an image
+      recognition model capable of identifying the suit and type of Mahjong tiles from photos shot with Pi Camera. We
+      experimented with several open-source models, including MobileNet-v2, Yolo-v7, and Yolo-v9, as well as pre-trained
+      models from Roboflow. The latter does target Mahjong tiles, however, it achieves only approximately 70% accuracy.
+      We would like to much higher accuracy because we want to avoid scenarios where the bot player mistakenly
+      identifies a winning hand due to incorrect tile recognition.
+    </p>
+    <img class="diagram" src="images/all_tiles.jpg" alt="all tiles">
+    <p class="caption">All tiles in a set of Mahjong</p>
+    <p class="project">
+      Yolo-v9 emerged as the most accurate, achieving nearly 100% accuracy. However, it is important that we believe the
+      quality and quantity of our training data proved more decisive to our success than the model's inherent
+      capabilities. We had generated substantial training data by manually photographing and labeling Mahjong tiles,
+      producing around 150 original images. Then, using data augmentation techniques, we automated the rotation and
+      lighting adjustments of these photos, ultimately expanding our dataset to approximately 1000 images. The training
+      process involves running for 100 epochs on an RTX 4090, which took about 25 minutes. We now have a highly
+      effective model that can detect all 14 tiles at once from a photo. These 14 tiles are to be the ones on the tile
+      rack facing the bot player.
+    </p>
+    <img class="diagram" src="images/station_close.png" alt="station close">
+    <p class="caption">Camera installation facing the tiles</p>
+
+    <h3>Pi Camera</h3>
+    <p class="project">
+      Since the goal of the project is to shoot photos with Pi Camera, we utilized it directly to generate the training
+      set. This ensures consistency in properties like resolution and light sensitivity. The camera module includes
+      scripts to configure the Pi Camera. We employed the picamera2 library, which allows us to easily manipulate the Pi
+      Camera to capture high-resolution images or to also display live image previews.
+    </p>
+
+    <h3>Player Algorithm</h3>
+    <p class="project">
+      The algorithm that governs the player's moves uses reinforcement learning and assigns reward to the successful
+      completion of a triplet or a couplet. A triplet in Mahjong is a sequence of 3 tiles or identical 3 tiles. To win
+      in Mahjong is to have 4 triplets and 1 couplet. The player strategizes based on its current 14 tiles which one it
+      wishes to get rid of with the goal of maximizing its future reward. In other words, it wishes to throw away a tile
+      that is least contributive to the forming of a triplet or a couplet. The transition probability is defined in
+      terms of the probability of receiving a specific tile in the next round. For a tile \(t\), since there are only 4
+      copies of any tile, this probability is:
+    </p>
+
+    <p class="project">
+      $$\frac{4 - \text{copies of $t$ bot already hold}} {\text{total number of tiles remaining in the deck}}$$
+    </p>
+
+    <p class="project">
+      Remaining tiles in the deck are the ones not held by any other player in the game nor have already been played by
+      any player. Played tiles cannot be retrieved per the rules of Mahjong. Both copies of \(t\) bot already hold and
+      total number of tiles remaining in the deck are properties of a specific state \(s\). That is, the state \(s\)
+      encodes the tiles the bot currently hold, all the tiles played by other players, and all tiles remaining to be
+      drawn from the deck. Therefore effectively, the probability can be written as \(P(t | s)\).
+    </p>
+
+    <p class="project">
+      Then, to calculate the value of any state under a policy \(\pi\) (the target parameter to train), we use the
+      following formula:
+    </p>
+
+    <p class="project">
+      $$ V^{\pi}(s) = r(s, \pi(s)) + \gamma * \sum_{t \in tiles} P(t | s) * V^{\pi}((s \setminus \pi(s)) \cup {t}) $$
+    </p>
+
+    <p class="project">
+      The value of a state indicates the bot's current advantage. The goal is to transition towards more advantageous
+      states. With this formulation, we can apply reinforcement learning training techniques, the details of which we
+      will not discuss here. Ultimately, the training process produces a policy that is a function of the state.
+    </p>
+
+    <img class="diagram" src="images/predic_small.png" alt="prediction">
+    <p class="caption">The prediction value for each tile, small value means less chance for this tile to exist to win
+    </p>
+
+    <h3>Servo control</h3>
     <p class="project">
       When implementing the pointer to the tile being player, we first decided to use software PWM signal as we did in
       lab 3 of the class. We connected the micro servo with 5V power, Ground according to the datasheet of the servo,
@@ -105,6 +182,47 @@
       value, and then directly mapped each tile to a specific duty cycle value in a dictionary to solve the accuracy
       issue.
     </p>
+
+    <img class="diagram" src="images/station_close2.png" alt="station close2">
+    <p class="caption">All hardware installation</p>
+
+    <h3>Integrated</h3>
+    <p class="project">
+      The integrated module contains the following functions that bring together the software and hardware portions of
+      this project:
+    </p>
+
+    <ul>
+      <li>A script that automates the photo taking process, the passing of the photo to the inference model, and the
+        generation of predicted results.</li>
+      <li>A script that monitors and responds to user inputs on GPIO pins.</li>
+      <li>A script that uses the PyGame library to control PiTFT displays and prompts users for inputs.</li>
+      <li>A script that signals to servo degree of turn which matches the location of the tile the player decides to
+        play.</li>
+    </ul>
+
+    <p class="project">
+      The main script connects all these componenets together and produces the following procedure for each round of
+      game:
+    </p>
+
+    <ol>
+      <li>Displays to user ready status on the PiTFT. Prompts user to indicate readiness through pressing a GPIO pin.
+      </li>
+      <li>Once button is pressed, begin playing by:
+        <ol>
+          <li>Taking a photo with the Pi Camera</li>
+          <li>Infer the tiles in the photo by passing it to the tile classifier</li>
+          <li>Decide on which tile to play through calling the player algorithm (also check if bot has won)</li>
+          <li>Indicate with the servo and PiTFT display which tile it intends to play</li>
+        </ol>
+      </li>
+      <li>Wait for user to confirm the result. Then move to next round of game.</li>
+    </ol>
+
+    <img class="diagram" src="images/station.jpg" alt="Full station view">
+    <p class="caption">Full project station view</p>
+
     <p class="project">
       Describe testing you performed to confirm that development steps of the project performed as planned.
     </p>
@@ -112,19 +230,24 @@
 
     <h2 id="result">Results</h2>
     <p class="project">
-      Did everything perform as planned? Did your team meet the goals outlined in the description?
-    </p>
-    <p class="project">
       Our project is generally able to achieve our initial goals. First the detection system is able to identify the
-      Mahjong card in high accuracy, and the Mahjong playing algorithm is also able to identify the correct card to play
-      even the orders or the tiles are shuffled. Finally, the PiTFT and the pointer are also able to accurately indicate
-      the current stage of play and the current tile being played.
+      Mahjong card in high accuracy. With our current trained dataset and the best YOLO 9 library, it is able to achieve
+      success of nearly 100%. After identifying all 14 tiles on hand the Mahjong playing algorithm is also able to
+      calculate for the best winning strategy of which tile to keep and which tile is the best to be ditched. So in most
+      cases it is able toidentify the correct tile to play even the orders or the tiles are shuffled. The PiTFT is able
+      to receive signals from the buttons to start the round, get ready and quit the game correctly. For display
+      functionality, it is also able to provide correct indication of the current status of the game, the tile being
+      played and some hints to help the users understand what to do next. Finally, the pointer is also able to
+      accurately indicat the current tile being played.
     </p>
     <p class="project">
-      However, the camera system had not been ideal, with a 6-8 second delay in detection and very sensitive requirement
-      to lighting, it cannot deliver accurate results fast and if within an environment where setting is not ideal. In
-      addition, initially we plan to implement a robot arm where it not only points to the card being played, but also
-      pushes or picks the tile, but due to timing and difficulty in implemenentation, this were not achieved and
+      However, the classification system had not been ideal, with a 6-8 second delay in detection and very sensitive
+      requirement to lighting, it cannot deliver accurate results fast and if within an environment where setting is at
+      the best. But in general, this still is an acceptable respond time for a game.
+    </p>
+    <p class="project">
+      In addition, initially we plan to implement a robot arm where it not only points to the card being played, but
+      also pushes or picks the tile, but due to timing and difficulty in implemenentation, this were not achieved and
       downgraded to a pointer only.
     </p>
 
@@ -132,11 +255,14 @@
     <p class="project">
       In conclusion, our project is able to let the robot become the fourth player with three other human players and
       together hold a game of Mahjong. It is able to successfully identify the rack of Mahjong tiles it currently holds
-      and decide for the optimal winning solution. The most crucial part of the project is the computer vision training,
-      which took large effort not only to train it on a seperate server, but also takes research to find out the correct
-      way to make it run on raspberry pi.
+      and decide for the optimal winning solution. </p>
+    <p class="project">
+      The most crucial part of the project is the computer vision training, which took large effort not only to train it
+      on a seperate server, but also takes research to find out the correct way to make it run on raspberry pi. We tried
+      multiple different models online for accuracy, but then it did turn out that most models are extremely complicated
+      and requires computational power to calculate that is too much for a raspberry pi. Therefore, we tried tranforming
+      the orignal YOLO model into onnx format, which will be feasible to run on a raspberry pi.
     </p>
-    <p class="project"> What absolutely didn't work for the cv i guess.</p>
 
     <h2 id="future">Future Works</h2>
     <p class="project">
@@ -155,9 +281,30 @@
       help reduce the movement helps from the other human players as well.
     </p>
 
+
     <h2 id="info">Code</h2>
     <p class="project">All code has been uploaded to <a
         href="https://github.com/colonel-aureliano/Embedded-Mahjong-Bot">Github repository</a>.</p>
+
+    <h2>Work Distribution</h2>
+    <div class="cent-cont" id="workdis">
+      <div class="block3 ba">
+        <p class="project">Yanny Zhu - rz367@cornell.edu</p>
+        <ul>
+          <li>Focused on software design</li>
+          <li>Computer vision model optimization</li>
+          <li>Mahjong algorithm optimization</li>
+        </ul>
+      </div>
+      <div class="block3 bb">
+        <p class="project">Rachel Yan - sy625@cornell.edu</p>
+        <ul>
+          <li>Focused on hardware design</li>
+          <li>GPIO and interaction design</li>
+          <li>Servo motor control design</li>
+        </ul>
+      </div>
+    </div>
 
 
     <h2>Budget</h2>
@@ -169,7 +316,7 @@
       <li>Lego blocks - $50 (?)</li>
       <li>Chopsticks - $0 (free)</li>
     </ul>
-    <p class="project">
+    <p class="project" id="price">
       Total spent: $55.95
     </p>
 
@@ -193,6 +340,8 @@
 
   <script src="scripts/jquery-3.6.1.js"></script>
   <script src="scripts/hamburger.js"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </body>
 
 </html>
