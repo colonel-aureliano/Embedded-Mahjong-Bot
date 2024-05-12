@@ -199,7 +199,7 @@ class Player:
     simulated_hand = self.current_hand.copy()
       
     # 1. Remove tiles that are part of a complete sequence or triplet
-    patterns : dict = self.partitioner.find_patterns(simulated_hand)
+    patterns : dict[str, list] = self.partitioner.find_patterns(simulated_hand)
     # print(patterns)
     # print(tiles_out_there)
 
@@ -227,8 +227,8 @@ class Player:
     winning_hand = simulated_hand.copy()
     for key, tile_list in patterns.items():
       if key == 'couplet' and len(tile_list) > 0:
-        winning_hand.remove(tile_list[0])
-        winning_hand.remove(tile_list[0])
+        if (tile_list[0] in winning_hand) : winning_hand.remove(tile_list[0])
+        if (tile_list[0] in winning_hand) : winning_hand.remove(tile_list[0])
       else:
         continue
     
