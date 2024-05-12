@@ -1,5 +1,5 @@
 html {
-	background-color: #c5e5cb;
+	background-color: #e4f7e7;
 	font-size: 100%;
 	font-family: 'Helvetica', 'Arial', sans-serif;
 	box-sizing: border-box;
@@ -145,7 +145,7 @@ h3 {
 	color: #227225;
 	font-weight: bold;
 	margin-top: 35px;
-	text-align: center;
+	text-align: left;
 	font-size: 25px;
 }
 
@@ -266,7 +266,7 @@ img {
 
 @media (min-width: 600px) {
 	html {
-		background-color: #c5e5cb;
+		background-color: #e4f7e7;
 		font-size: 100%;
 	}
 
