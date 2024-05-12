@@ -56,6 +56,8 @@
       fourth player is needed. To solve this problem, our team worked on the embedded mahjong player, so that it can
       play along as the extra player to help start the game.
     </p>
+    <img class="diagram" src="images/station.jpg" alt="Full station view">
+    <p class="caption">Full project station view</p>
     <p class="project">
       Our project first uses the Pi Camera to take photos of Mahjong tiles, and uses the photos to train the computer
       vision model, and then uses the trained model to identify the tiles. Next, the Mahjong algorithm would determine
@@ -78,6 +80,9 @@
     </p>
     <img class="diagram" src="images/system.png" alt="High-Level Diagram">
     <p class="caption">System block diagram</p>
+    <p class="project">
+      In terms of software design.
+    </p>
     <p class="project">
       When implementing the pointer to the tile being player, we first decided to use software PWM signal as we did in
       lab 3 of the class. We connected the micro servo with 5V power, Ground according to the datasheet of the servo,
@@ -151,7 +156,9 @@
     </p>
 
     <h2 id="info">Code</h2>
-    <p class="project">All code has been uploaded to Github repository.</p>
+    <p class="project">All code has been uploaded to <a
+        href="https://github.com/colonel-aureliano/Embedded-Mahjong-Bot">Github repository</a>.</p>
+
 
     <h2>Budget</h2>
     <ul>
@@ -168,12 +175,14 @@
 
     <h2>Refences</h2>
     <ul>
-      <li>https://github.com/WongKinYiu/yolov9</li>
-      <li>https://github.com/danielsyahputra/yolov9-onnx</li>
-      <li>https://github.com/JohnnyLiang1018/MahjongAI/tree/master/offline_mahjong</li>
-      <li>https://universe.roboflow.com/test01-8ymsa/4a41f234e48d49b5b335f25643ca0293</li>
-      <li>https://projects.raspberrypi.org/en/projects/getting-started-with-picamera/2</li>
-      <li>https://projects.raspberrypi.org/en/projects/grandpa-scarer/3</li>
+      <li><a href="https://github.com/WongKinYiu/yolov9">Github YOLO v9</a></li>
+      <li><a href="https://github.com/danielsyahputra/yolov9-onnx">Github YOLO-onnx</a></li>
+      <li><a href="https://github.com/JohnnyLiang1018/MahjongAI/tree/master/offline_mahjong">Github Mahjong
+          Algorithm</a></li>
+      <li><a href="https://universe.roboflow.com/test01-8ymsa/4a41f234e48d49b5b335f25643ca0293">Roboflow</a></li>
+      <li><a href="https://projects.raspberrypi.org/en/projects/getting-started-with-picamera/2">Pi Camera guide</a>
+      </li>
+      <li><a href="https://projects.raspberrypi.org/en/projects/grandpa-scarer/3">Servo use guide</a></li>
     </ul>
 
   </main>
