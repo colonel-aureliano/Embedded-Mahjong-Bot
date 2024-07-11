@@ -5,7 +5,7 @@
 
   <title>ECE5725 Final Project</title>
 
-  <link rel="stylesheet" type="text/css" href="styles/site.css">
+  <link rel="stylesheet" type="text/css" href="website/styles/site.css">
 
 </head>
 
@@ -76,7 +76,7 @@
       the Pi Camera afor taking photos of the Mahjong tiles, the PiTFT for display and button interactions, and the
       servo for played tile indication.
     </p>
-    <img class="diagram" src="images/system.png" alt="High-Level Diagram">
+    <img class="diagram" src="website/images/system.png" alt="High-Level Diagram">
     <p class="caption">System block diagram</p>
     <p class="project">
       In terms of software design, our code comprises four primary modules: tile_classifier, camera, player, and
@@ -94,7 +94,7 @@
       We would like to much higher accuracy because we want to avoid scenarios where the bot player mistakenly
       identifies a winning hand due to incorrect tile recognition.
     </p>
-    <img class="diagram" src="images/all_tiles.jpg" alt="all tiles">
+    <img class="diagram" src="website/images/all_tiles.jpg" alt="all tiles">
     <p class="caption">All tiles in a set of Mahjong</p>
     <p class="project">
       Yolo-v9 emerged as the most accurate, achieving nearly 100% accuracy. However, it is important that we believe the
@@ -116,7 +116,7 @@
       can also perform well. Therefore, upon testing the model with less ideal lighting, we discover that some errors
       are prone to be made on the peripheries of images. We then retrained the model with more such error-prone samples.
     </p>
-    <img class="diagram" src="images/station_close.png" alt="station close">
+    <img class="diagram" src="website/images/station_close.png" alt="station close">
     <p class="caption">Camera installation facing the tiles</p>
 
     <h3>Pi Camera</h3>
@@ -165,7 +165,7 @@
       will not discuss here. Ultimately, the training process produces a policy that is a function of the state.
     </p>
 
-    <img class="diagram" src="images/predic_small.png" alt="prediction">
+    <img class="diagram" src="website/images/predic_small.png" alt="prediction">
     <p class="caption">The prediction value for each tile, small value means less chance for this tile to exist to win
     </p>
 
@@ -205,7 +205,7 @@
       issue.
     </p>
 
-    <img class="diagram" src="images/station_close2.png" alt="station close2">
+    <img class="diagram" src="website/images/station_close2.png" alt="station close2">
     <p class="caption">All hardware installation</p>
 
     <h3>Integrated</h3>
@@ -242,7 +242,7 @@
       <li>Wait for user to confirm the result. Then move to next round of game.</li>
     </ol>
 
-    <img class="diagram" src="images/station.jpg" alt="Full station view">
+    <img class="diagram" src="website/images/station.jpg" alt="Full station view">
     <p class="caption">Full project station view</p>
 
     <p class="project">
@@ -364,8 +364,8 @@
     <p>2024SP by Monday Group 3</p>
   </footer>
 
-  <script src="scripts/jquery-3.6.1.js"></script>
-  <script src="scripts/hamburger.js"></script>
+  <script src="website/scripts/jquery-3.6.1.js"></script>
+  <script src="website/scripts/hamburger.js"></script>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </body>
