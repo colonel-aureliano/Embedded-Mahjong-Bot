@@ -222,10 +222,11 @@ class Player:
           simulated_hand.remove(tile)
       else:
         continue
-
+    # print(simulated_hand)
+    # print(patterns)
     winning_hand = simulated_hand.copy()
     for key, tile_list in patterns.items():
-      if key == 'couplet':
+      if key == 'couplet' and len(tile_list) > 0:
         winning_hand.remove(tile_list[0])
         winning_hand.remove(tile_list[0])
       else:

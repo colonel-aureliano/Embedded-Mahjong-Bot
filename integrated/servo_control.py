@@ -51,7 +51,7 @@ def get_latest_play_value(file_path):
 
 
 #================================running===============================
-def run_control(rack, played):
+def run_control(tile, rack=None, played=None):
     GPIO.setmode(GPIO.BCM) # Sets the pin numbering system to use the physical layout
     # Path to the log file
     log_file_path = "logs/log2.txt"
@@ -81,7 +81,7 @@ def run_control(rack, played):
         # Move the servo back and forth
         #rack, played = get_latest_play_value(log_file_path)
 
-        tile = rack.index(played)
+        # tile = rack.index(played)
         #print("tile_played: "+str(tile))
         #tile = int(input("Tile value: "))
         pointer = map_value(tile, tile_range, pointer_range)
@@ -92,6 +92,6 @@ def run_control(rack, played):
     # pi_hw.hardware_PWM(13, 50, end_dc)
 
         # Clean up everything
-    pi_hw.stop()
+    # pi_hw.stop()
     #p.stop()                 # At the end of the program, stop the PWM
-    GPIO.cleanup()           # Resets the GPIO pins back to defaults
+    # GPIO.cleanup()           # Resets the GPIO pins back to defaults

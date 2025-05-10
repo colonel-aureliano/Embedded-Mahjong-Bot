@@ -7,18 +7,25 @@ import traceback
 from datetime import datetime
 import gpio_interface
 
-def main():
+def main(cmdline_input_only, button_next=True):
   infer = Infer()
   player = Player()
-  cmdline_input_only = True
-  end = rounds.rounds(infer, player, not cmdline_input_only, button_next=False)
+
+  if cmdline_input_only:
+    print("******** WARNING: GPIO inputs will not work. Use command line only. ********")
+  else:
+    print("******** WARNING: Command line will not work. Use GPIO inputs only. ********")
+
+  end = rounds.rounds(infer, player, not cmdline_input_only, button_next)
+  
   if (end):
-    sys.stdout.flush()
     print("Bye!")
   else:
     print("Game ended unexpectedly.")
 
 def clean_up():
+  sys.stdout.flush()
+  print("cleaning up")
   gpio_interface.clean_up()
   os._exit(0)
 
@@ -42,12 +49,20 @@ if __name__ == "__main__":
   log_filename = f"logs/{current_time}_log.txt"
 
   # Redirect stdout to log file
+  # Now all print statements will be redirected to log.txt
   sys.stdout = Logger(log_filename)
 
   try:
-    # Now all print statements will be redirected to log.txt
+    gpio_command = "sudo pigpiod"
+    print(f"Make sure {gpio_command} is run first!")
+
     print(f"Mahjong Bot Run Log; ran at {current_time}")
-    main()
+
+    cmdline_input_only = False
+    if (len(sys.argv) > 1 and sys.argv[1] == 'cmd'): cmdline_input_only = True
+    if (len(sys.argv) > 2 and sys.argv[2] == 'sleep-next'): button_next = False
+    
+    main(cmdline_input_only, button_next)
 
   except Exception as e:
     print(f"An exception occurred: {e}")
@@ -63,5 +78,4 @@ if __name__ == "__main__":
   except KeyboardInterrupt:
     print("Interrupted.")
   finally: 
-    print("cleaning up")
     clean_up()

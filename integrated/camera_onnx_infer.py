@@ -76,6 +76,10 @@ class Infer:
 
         pred : list[dict] = self.inferred_detections(self.detector, self.photo_path, generate_image or len(args) > 2 and args[2] == '-generate-image')
         pred.sort(key=lambda d: d['box'][0])
+        
+        # print("Initial predictions:")
+        # for d in pred:
+        #     print(d)
 
         if (len(pred) > 14):
             consecutive_boxes = [] # indices of consecutive boxes
@@ -134,6 +138,16 @@ class Infer:
                 # for d in new_pred:
                 #     print(d)
                 pred = new_pred
+        
+        if (len(pred) > 14):
+            # Sort the predictions by confidence level in ascending order
+            pred.sort(key=lambda d: d['confidence'])
+
+            # Remove the tiles with the least confidence level until pred has 14 tiles
+            while len(pred) > 14:
+                pred.pop(0)
+        
+        pred.sort(key=lambda d: d['box'][0])
 
         if len(args) > 2 and args[2] == '-json':
             for d in pred:

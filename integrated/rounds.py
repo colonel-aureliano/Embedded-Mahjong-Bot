@@ -62,16 +62,13 @@ def rounds_factored(infer, player, gpio_input_only: bool, button_next: bool = Fa
   prompt_playing = "Playing..."
   prompt_won = "Bot won!"
 
-  if not gpio_input_only:
-    print("WARNING: GPIO inputs do not work. Use command line only.")
-
   while(not gpio_interface.do_quit):
     prompt_round = f"Round {counter}"
     
     prompt_buttons = f"Button 23: affirm ready; {prompt_quit}"
 
     print(f"################### {prompt_round} ###################")
-    print(f"{prompt_ready}")
+    print(f"{prompt_ready} Press enter to confirm.")
 
     tft_display.display_up_to_three_texts(tft, prompt_ready, prompt_round, prompt_buttons)
 
@@ -107,9 +104,15 @@ def rounds_factored(infer, player, gpio_input_only: bool, button_next: bool = Fa
       wait_on_button = False
     
     print(prompt_played)
-    tft_display.display_up_to_three_texts(tft, prompt_played, prompt_next, prompt_quit)
+    index_of_played = tile_rack.index(name)
+    if index_of_played < 7:
+      prompt_which_played = f'{index_of_played+1}th from right'
+    else:
+      prompt_which_played = f'{14-index_of_played}th from left'
+      
+    tft_display.display_up_to_three_texts(tft, prompt_played, prompt_which_played, prompt_next)
 
-    servo_control.run_control(tile_rack, name)
+    servo_control.run_control(index_of_played)
 
     if (gpio_input_only): 
       print(prompt_next)
