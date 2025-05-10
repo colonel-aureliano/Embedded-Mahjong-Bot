@@ -7,7 +7,7 @@ import traceback
 from datetime import datetime
 import gpio_interface
 
-def main(cmdline_input_only, button_next=True):
+def main(cmdline_input_only, button_next=True, show_predicted_img=False):
   infer = Infer()
   player = Player()
 
@@ -16,7 +16,7 @@ def main(cmdline_input_only, button_next=True):
   else:
     print("******** WARNING: Command line will not work. Use GPIO inputs only. ********")
 
-  end = rounds.rounds(infer, player, not cmdline_input_only, button_next)
+  end = rounds.rounds(infer, player, not cmdline_input_only, button_next, show_predicted_img)
   
   if (end):
     print("Bye!")
@@ -59,10 +59,15 @@ if __name__ == "__main__":
     print(f"Mahjong Bot Run Log; ran at {current_time}")
 
     cmdline_input_only = False
+    show_predicted_img = False
+    button_next = True
+
     if (len(sys.argv) > 1 and sys.argv[1] == 'cmd'): cmdline_input_only = True
     if (len(sys.argv) > 2 and sys.argv[2] == 'sleep-next'): button_next = False
+    if (len(sys.argv) > 2 and sys.argv[2] == 'img'): show_predicted_img = True
+    if (len(sys.argv) > 1 and sys.argv[1] == 'img'): show_predicted_img = True
     
-    main(cmdline_input_only, button_next)
+    main(cmdline_input_only, button_next, show_predicted_img)
 
   except Exception as e:
     print(f"An exception occurred: {e}")

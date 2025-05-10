@@ -67,6 +67,23 @@ def run_control(tile, rack=None, played=None):
 
     start_time = time.time()
 
+    tile_to_pointer = {
+        0: 8.5,
+        1: 8.2,
+        2: 8.0,
+        3: 7.8,
+        4: 7.5,#
+        5: 7.3,
+        6: 7.0, #
+        7: 6.8,
+        8: 6.6,
+        9: 6.3,
+        10: 6.1,
+        11: 5.9, #
+        12: 5.6,
+        13: 5.4
+    }
+
 
     # Call the function to continuously monitor the log file for the latest play value
 
@@ -84,7 +101,7 @@ def run_control(tile, rack=None, played=None):
         # tile = rack.index(played)
         #print("tile_played: "+str(tile))
         #tile = int(input("Tile value: "))
-        pointer = map_value(tile, tile_range, pointer_range)
+        pointer = tile_to_pointer[tile]
         in_dc = int(pointer * 10000)
         #p.ChangeDutyCycle(pointer)     # Changes the pulse width to 3 (so moves the servo)
         pi_hw.hardware_PWM(13, 50, in_dc)

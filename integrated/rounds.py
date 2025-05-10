@@ -7,14 +7,13 @@ import servo_control
 from time import sleep
 
 prediction_path = "integrated/predictions.json"
-generate_predicted_image = False
 
 # Takes a picture and feed all detected tiles to player
 # Returns player's decision
-def play_round(infer : Infer, player : Player, tile_mapping : dict[str, int], reverse_tile_mapping, counter: int) -> int:
+def play_round(infer : Infer, player : Player, tile_mapping : dict[str, int], reverse_tile_mapping, counter: int, show_predicted_img = False) -> int:
 
   player.reset_hand()
-  unsorted_pred = infer.shoot_detect_to_json(prediction_path, generate_predicted_image)
+  unsorted_pred = infer.shoot_detect_to_json(prediction_path, show_predicted_img)
 
   # read predictions.json
   with open(prediction_path) as f:
@@ -49,7 +48,7 @@ def play_round(infer : Infer, player : Player, tile_mapping : dict[str, int], re
 
 #####################################################
 
-def rounds_factored(infer, player, gpio_input_only: bool, button_next: bool = False):
+def rounds_factored(infer, player, gpio_input_only: bool, button_next: bool = False, show_predicted_img = False):
   with open("integrated/player_tile_mapping.json") as f:
     tile_mapping = json.load(f)
   
@@ -78,7 +77,7 @@ def rounds_factored(infer, player, gpio_input_only: bool, button_next: bool = Fa
     print(prompt_playing)
     tft_display.display_up_to_three_texts(tft, prompt_playing)
 
-    played_tile, name, tile_rack = play_round(infer, player, tile_mapping, reverse_tile_mapping, counter)
+    played_tile, name, tile_rack = play_round(infer, player, tile_mapping, reverse_tile_mapping, counter, show_predicted_img)
     if (played_tile == -2):
       # won
       print(prompt_won)
@@ -127,7 +126,7 @@ def rounds_factored(infer, player, gpio_input_only: bool, button_next: bool = Fa
 #####################################################
 
 
-def rounds(infer, player, gpio_input_only: bool, button_next: bool = False):
+def rounds(infer, player, gpio_input_only: bool, button_next: bool = False, show_predicted_img = False):
   """
   Executes the rounds of the game using GPIO interface.
   Displays status to PiTFT.
@@ -141,4 +140,4 @@ def rounds(infer, player, gpio_input_only: bool, button_next: bool = False):
 
   """
 
-  return rounds_factored(infer, player, gpio_input_only, button_next)
+  return rounds_factored(infer, player, gpio_input_only, button_next, show_predicted_img)
